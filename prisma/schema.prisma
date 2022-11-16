@@ -1,0 +1,39 @@
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                Int                 @id @default(autoincrement())
+  name              String
+  fone              String
+  address           Address?
+  loan              Loan[]             
+  createdAt         DateTime            @db.DateTime2 @default(now())
+  updatedAt         DateTime?           @db.DateTimeOffset
+}
+
+model Address {
+  id                Int                 @id @default(autoincrement())
+  street            String
+  district          String
+  number            String
+  city              String
+  user              User?                @relation(fields: [userId], references: [id])
+  userId            Int                 @unique
+  createdAt         DateTime            @db.DateTime2 @default(now())
+  updatedAt         DateTime?           @db.DateTimeOffset
+}
+
+model Loan {
+  id                Int                 @id @default(autoincrement())
+  value_loan        Int
+  user              User?                @relation(fields: [userId], references: [id])
+  userId            Int                 @unique
+  createdAt         DateTime            @db.DateTime2 @default(now())
+  updatedAt         DateTime?           @db.DateTimeOffset
+}
