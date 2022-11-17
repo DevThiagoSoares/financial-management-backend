@@ -41,32 +41,20 @@ export class UserService {
       async update(id: number, data: UpdateUserDto) {
             const user = await this.findOne(id);
             if (user) {
-                  const userAlreadyExist = await this.prisma.user.findFirst();
-
-                  if (userAlreadyExist && userAlreadyExist.id !== user.id)
-                        return this.prisma.user.update({
-                              where: { id },
-                              data: { id },
-                              include: {
-                                    address: true,
-                                    loan: true,
-                              },
-                        });
+                  return await this.prisma.user.update({
+                        where: { id },
+                        data,
+                        include: {
+                              address: true,
+                              loan: true,
+                        },
+                  });
             }
       }
 
       async remove(id: number) {
-            const user = await this.findOne(id);
-            if (user) {
-            }
             await this.prisma.user.delete({
                   where: { id },
-            });
-            await this.prisma.address.delete({
-                  where: { userId: id },
-            });
-            await this.prisma.loan.delete({
-                  where: { userId: id },
             });
       }
 }
