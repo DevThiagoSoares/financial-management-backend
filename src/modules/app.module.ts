@@ -4,12 +4,14 @@ import { UserModule } from './user.module';
 import { AppController } from '../controllers/app.controller';
 import { AppService } from '../services/app.service';
 import { AddressModule } from './address.module';
+import { LoanModule } from 'src/loan/loan.module';
 
 @Module({
       imports: [
             ConfigModule.forRoot({ envFilePath: '.env' }),
             UserModule,
             AddressModule,
+            LoanModule,
       ],
       controllers: [AppController],
       providers: [AppService],

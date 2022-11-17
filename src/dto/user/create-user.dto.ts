@@ -12,5 +12,6 @@ export class CreateUserDto {
 
       fone: string;
 
+      address: Address;
       loan: Loan;
 }
