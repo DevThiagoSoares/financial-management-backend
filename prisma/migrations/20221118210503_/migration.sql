@@ -22,8 +22,7 @@ CREATE TABLE [dbo].[Address] (
     [userId] INT NOT NULL,
     [createdAt] DATETIME2 NOT NULL CONSTRAINT [Address_createdAt_df] DEFAULT CURRENT_TIMESTAMP,
     [updatedAt] DATETIMEOFFSET,
-    CONSTRAINT [Address_pkey] PRIMARY KEY CLUSTERED ([id]),
-    CONSTRAINT [Address_userId_key] UNIQUE NONCLUSTERED ([userId])
+    CONSTRAINT [Address_pkey] PRIMARY KEY CLUSTERED ([id])
 );
 
 -- CreateTable
@@ -33,15 +32,14 @@ CREATE TABLE [dbo].[Loan] (
     [userId] INT NOT NULL,
     [createdAt] DATETIME2 NOT NULL CONSTRAINT [Loan_createdAt_df] DEFAULT CURRENT_TIMESTAMP,
     [updatedAt] DATETIMEOFFSET,
-    CONSTRAINT [Loan_pkey] PRIMARY KEY CLUSTERED ([id]),
-    CONSTRAINT [Loan_userId_key] UNIQUE NONCLUSTERED ([userId])
+    CONSTRAINT [Loan_pkey] PRIMARY KEY CLUSTERED ([id])
 );
 
 -- AddForeignKey
-ALTER TABLE [dbo].[Address] ADD CONSTRAINT [Address_userId_fkey] FOREIGN KEY ([userId]) REFERENCES [dbo].[User]([id]) ON DELETE NO ACTION ON UPDATE CASCADE;
+ALTER TABLE [dbo].[Address] ADD CONSTRAINT [Address_userId_fkey] FOREIGN KEY ([userId]) REFERENCES [dbo].[User]([id]) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE [dbo].[Loan] ADD CONSTRAINT [Loan_userId_fkey] FOREIGN KEY ([userId]) REFERENCES [dbo].[User]([id]) ON DELETE NO ACTION ON UPDATE CASCADE;
+ALTER TABLE [dbo].[Loan] ADD CONSTRAINT [Loan_userId_fkey] FOREIGN KEY ([userId]) REFERENCES [dbo].[User]([id]) ON DELETE CASCADE ON UPDATE CASCADE;
 
 COMMIT TRAN;
 

@@ -1,15 +1,5 @@
-import {
-      Controller,
-      Get,
-      Post,
-      Body,
-      Patch,
-      Param,
-      Delete,
-      Put,
-} from '@nestjs/common';
+import { Controller, Get, Body, Param, Delete, Put } from '@nestjs/common';
 import { AddressService } from '../services/address.service';
-import { CreateAddressDto } from '../dto/address/create-address.dto';
 import { UpdateAddressDto } from '../dto/address/update-address.dto';
 
 @Controller('address')
@@ -22,20 +12,20 @@ export class AddressController {
       }
 
       @Get(':id')
-      findOne(@Param('id') id: string) {
-            return this.addressService.findOne(+id);
+      findOne(@Param('id') id: number) {
+            return this.addressService.findOne(id);
       }
 
-      @Put(':id')
+      @Put(':userId')
       update(
-            @Param('id') id: string,
+            @Param('userId') userId: string,
             @Body() updateAddressDto: UpdateAddressDto,
       ) {
-            return this.addressService.update(+id, updateAddressDto);
+            return this.addressService.update(+userId, updateAddressDto);
       }
 
       @Delete(':id')
-      remove(@Param('id') id: string) {
-            return this.addressService.remove(+id);
+      remove(@Param('id') id: number) {
+            return this.addressService.remove(id);
       }
 }

@@ -3,14 +3,17 @@ import {
       Get,
       Post,
       Body,
-      Patch,
       Param,
       Delete,
       Put,
+      Query,
 } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { CreateUserDto } from '../dto/user/create-user.dto';
 import { UpdateUserDto } from '../dto/user/update-user.dto';
+import { FiltersUserDTO } from '../dto/user/filterUser.dto';
+import { Page, PageResponse } from 'src/config/database/page.model';
+import { MappedUserDTO } from 'src/dto/user/mappedUser.dto';
 
 @Controller('user')
 export class UserController {
@@ -22,13 +25,16 @@ export class UserController {
       }
 
       @Get()
-      findAll() {
-            return this.userService.findAll();
+      listAll(
+            @Query() page: Page,
+            @Query() filters: FiltersUserDTO,
+      ): Promise<PageResponse<MappedUserDTO>> {
+            return this.userService.listAll(page, filters);
       }
 
       @Get(':id')
-      findOne(@Param('id') id: string) {
-            return this.userService.findOne(+id);
+      async listById(@Param('id') id: string) {
+            return await this.userService.listById(+id);
       }
 
       @Put(':id')
@@ -37,7 +43,7 @@ export class UserController {
       }
 
       @Delete(':id')
-      remove(@Param('id') id: string) {
-            return this.userService.remove(+id);
+      remove(@Param('id') id: number) {
+            return this.userService.delete(id);
       }
 }

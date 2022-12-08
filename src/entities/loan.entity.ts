@@ -1,6 +1,4 @@
-import { Prisma } from '@prisma/client';
-
-export class Loan implements Prisma.LoanUncheckedCreateInput {
+export class Loan {
       id?: number;
       value_loan: number;
       userId: number;

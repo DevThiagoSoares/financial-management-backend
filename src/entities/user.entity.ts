@@ -1,11 +1,21 @@
-import { Prisma } from '@prisma/client';
+import { Address } from './address.entity';
+import { Loan } from './loan.entity';
 
-export class User implements Prisma.UserUncheckedCreateInput {
+export class User {
       id?: number;
       name: string;
       fone: string;
-      address?: Prisma.AddressUncheckedCreateNestedOneWithoutUserInput;
-      loan?: Prisma.LoanUncheckedCreateNestedManyWithoutUserInput;
-      createdAt?: string | Date;
-      updatedAt?: string | Date;
+      address?: Address;
+      loan?: Loan;
+      createdAt?: Date;
+      updatedAt?: Date;
+
+      constructor(
+            props: Omit<User, 'id' | 'createdAt'>,
+
+            id?: number,
+      ) {
+            Object.assign(this, props);
+            this.createdAt = new Date();
+      }
 }

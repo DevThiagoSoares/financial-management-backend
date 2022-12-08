@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateAddressDto } from '../dto/address/create-address.dto';
+import { PrismaService } from '../config/database/prisma.service';
 import { UpdateAddressDto } from '../dto/address/update-address.dto';
 
 @Injectable()
@@ -18,17 +16,15 @@ export class AddressService {
             });
       }
 
-      async update(id: number, updateAddressDto: UpdateAddressDto) {
+      async update(userId: number, updateAddressDto: UpdateAddressDto) {
             try {
                   const data = await this.prisma.address.update({
-                        where: { id },
+                        where: { userId },
                         data: updateAddressDto,
                   });
 
                   return data;
             } catch (error) {
-                  console.log(error);
-
                   throw new Error(error.message);
             }
       }

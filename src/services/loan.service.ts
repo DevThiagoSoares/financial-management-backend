@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateLoanDto } from './dto/create-loan.dto';
-import { UpdateLoanDto } from './dto/update-loan.dto';
+import { PrismaService } from '../config/database/prisma.service';
+import { CreateLoanDto } from '../dto/loan/create-loan.dto';
+import { UpdateLoanDto } from '../dto/loan/update-loan.dto';
 
 @Injectable()
 export class LoanService {
