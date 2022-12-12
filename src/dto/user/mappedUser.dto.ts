@@ -6,6 +6,5 @@ export class MappedUserDTO {
       name?: string;
       fone?: string;
       address?: Address;
-      loan?: Loan;
-      createdAt: Date;
+      loan?: Loan[];
 }

@@ -5,6 +5,4 @@ export class Address {
       number: string;
       city: string;
       userId: number;
-      createdAt?: string | Date;
-      updatedAt?: string | Date;
 }

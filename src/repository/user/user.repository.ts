@@ -6,6 +6,7 @@ import { PrismaService } from '../../config/database/prisma.service';
 import { FiltersUserDTO } from '../../dto/user/filterUser.dto';
 import { User } from '../../entities/user.entity';
 import IUserRepository from './user.repository.contract';
+import { Loan } from 'src/entities/loan.entity';
 
 @Injectable()
 export class UserRepository extends Pageable<User> implements IUserRepository {
@@ -22,9 +23,17 @@ export class UserRepository extends Pageable<User> implements IUserRepository {
                   ? await this.repository.user.findMany({
                           ...this.buildPage(page),
                           where: condition,
+                          include: {
+                                address: true,
+                                loan: true,
+                          },
                     })
                   : await this.repository.user.findMany({
                           ...this.buildPage(page),
+                          include: {
+                                address: true,
+                                loan: true,
+                          },
                     });
 
             const total = condition
@@ -60,16 +69,15 @@ export class UserRepository extends Pageable<User> implements IUserRepository {
                                     district: data.address.district,
                                     number: data.address.number,
                                     street: data.address.street,
-                                    createdAt: data.address.createdAt,
                               },
                         },
                         loan: {
-                              create: {
-                                    value_loan: data.loan.value_loan,
-                                    createdAt: data.address.createdAt,
+                              createMany: {
+                                    data: data.loan.map<Loan>((loan) => ({
+                                          value_loan: loan.value_loan,
+                                    })),
                               },
                         },
-                        createdAt: data.createdAt,
                   },
             });
       }
@@ -107,16 +115,16 @@ export class UserRepository extends Pageable<User> implements IUserRepository {
                                     street: data.address.street,
                               },
                         },
-                        loan: {
-                              update: {
-                                    where: {
-                                          id: data.loan.id,
-                                    },
-                                    data: {
-                                          value_loan: data.loan.value_loan,
-                                    },
-                              },
-                        },
+                        // loan: {
+                        //       update: {
+                        //             where: {
+                        //                   id: data.loan.id,
+                        //             },
+                        //             data: {
+                        //                   value_loan:data.loan
+                        //             },
+                        //       },
+                        // },
                   },
                   where: {
                         id: data.id,

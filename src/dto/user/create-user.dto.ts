@@ -1,6 +1,12 @@
 import { Prisma } from '@prisma/client';
-import { Transform, TransformFnParams } from 'class-transformer';
-import { IsString, IsOptional, IsNotEmpty, Length } from 'class-validator';
+import { Transform, TransformFnParams, Type } from 'class-transformer';
+import {
+      IsString,
+      IsOptional,
+      IsNotEmpty,
+      Length,
+      IsArray,
+} from 'class-validator';
 import { Address } from '../../entities/address.entity';
 import { Loan } from '../../entities/loan.entity';
 
@@ -21,5 +27,7 @@ export class CreateUserDto {
       fone: string;
 
       address: Address;
-      loan: Loan;
+
+      @IsArray()
+      loan: Loan[];
 }

@@ -84,7 +84,6 @@ export class UserService {
                         fone: user.fone,
                         address: user.address,
                         loan: user.loan,
-                        createdAt: user.createdAt,
                   };
             });
       }

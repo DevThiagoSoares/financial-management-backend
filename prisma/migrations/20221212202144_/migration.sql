@@ -22,7 +22,8 @@ CREATE TABLE [dbo].[Address] (
     [userId] INT NOT NULL,
     [createdAt] DATETIME2 NOT NULL CONSTRAINT [Address_createdAt_df] DEFAULT CURRENT_TIMESTAMP,
     [updatedAt] DATETIMEOFFSET,
-    CONSTRAINT [Address_pkey] PRIMARY KEY CLUSTERED ([id])
+    CONSTRAINT [Address_pkey] PRIMARY KEY CLUSTERED ([id]),
+    CONSTRAINT [Address_userId_key] UNIQUE NONCLUSTERED ([userId])
 );
 
 -- CreateTable

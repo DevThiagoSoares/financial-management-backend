@@ -6,5 +6,5 @@ export class FiltersUserDTO {
       name?: string;
       fone?: string;
       address?: Address;
-      loan?: Loan;
+      loan?: Loan[];
 }
