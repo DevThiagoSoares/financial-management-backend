@@ -15,7 +15,7 @@ export class UserService {
       ) {}
 
       async create(payload: CreateUserDto) {
-            return this.userRepository.create(payload);
+            return await this.userRepository.create(payload);
       }
 
       async listAll(

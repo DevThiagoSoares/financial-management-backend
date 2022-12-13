@@ -1,35 +1,54 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import ILoanRepository from '../repository/loan/loan.repository.contract';
 import { PrismaService } from '../config/database/prisma.service';
 import { CreateLoanDto } from '../dto/loan/create-loan.dto';
 import { UpdateLoanDto } from '../dto/loan/update-loan.dto';
+import IUserRepository from 'src/repository/user/user.repository.contract';
 
 @Injectable()
 export class LoanService {
-      constructor(private readonly prisma: PrismaService) {}
+      constructor(
+            @Inject('ILoanRepository')
+            @Inject('IUserRepository')
+            private readonly loanRepository: ILoanRepository,
+            private readonly userRepository: IUserRepository,
+      ) {}
 
-      create(data: CreateLoanDto, userId: number) {
+      async create(data: CreateLoanDto, LoanId: number) {
             console.log(data);
-            return this.prisma.loan.create({
+            return await this.loanRepository.create({
                   data: {
-                        userId: +userId,
+                        LoanId: +LoanId,
                         value_loan: data.value_loan,
                   },
             });
       }
 
-      findAll() {
+      async findAll() {
             return `This action returns all loan`;
       }
 
-      findOne(id: number) {
-            return `This action returns a #${id} loan`;
+      async listById(id: number) {
+            const user = await this.loanRepository.findById(id);
+
+            if (!user)
+                  throw new HttpException(
+                        `Não foi encontrado um user com o id: ${id}`,
+                        HttpStatus.NOT_FOUND,
+                  );
+
+            return user;
       }
 
-      update(id: number, updateLoanDto: UpdateLoanDto) {
-            return `This action updates a #${id} loan`;
+      async update(id: number,  data: UpdateLoanDto) {
+            const userIdLoan = await this.loanRepository.findById(Id);
+
+            return await this.userRepository.update(
+                  Object.assign(userIdLoan, { ...userIdLoan, ...data }),
+            );
       }
 
-      remove(id: number) {
+      async remove(id: number) {
             return `This action removes a #${id} loan`;
       }
 }

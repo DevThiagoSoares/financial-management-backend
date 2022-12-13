@@ -1,11 +1,11 @@
 import {
       Controller,
-      Get,
       Post,
       Body,
       Param,
       Delete,
       Put,
+      Query,
 } from '@nestjs/common';
 import { LoanService } from '../services/loan.service';
 import { CreateLoanDto } from '../dto/loan/create-loan.dto';
@@ -23,19 +23,13 @@ export class LoanController {
             return this.loanService.create(createLoanDto, userId);
       }
 
-      @Get()
-      findAll() {
-            return this.loanService.findAll();
-      }
-
-      @Get(':id')
-      findOne(@Param('id') id: string) {
-            return this.loanService.findOne(+id);
-      }
-
-      @Put(':id')
-      update(@Param('id') id: string, @Body() updateLoanDto: UpdateLoanDto) {
-            return this.loanService.update(+id, updateLoanDto);
+      @Put()
+      update(
+            @Param('id') id: string,
+            @Param('userId') userId: string,
+            @Body() updateLoanDto: UpdateLoanDto,
+      ) {
+            return this.loanService.update(+id, +userId, updateLoanDto);
       }
 
       @Delete(':id')
