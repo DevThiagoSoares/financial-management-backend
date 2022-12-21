@@ -7,6 +7,8 @@ import { FiltersUserDTO } from '../../dto/user/filterUser.dto';
 import { User } from '../../entities/user.entity';
 import IUserRepository from './user.repository.contract';
 import { Loan } from 'src/entities/loan.entity';
+import { asapScheduler } from 'rxjs';
+import { AbstractInstanceResolver } from '@nestjs/core/injector/abstract-instance-resolver';
 
 @Injectable()
 export class UserRepository extends Pageable<User> implements IUserRepository {
@@ -102,32 +104,29 @@ export class UserRepository extends Pageable<User> implements IUserRepository {
       //               where: { cpf },
       //         });
       //   }
-      update(data: User): Promise<User> {
+      update(id: number, data: User): Promise<User> {
             return this.repository.user.update({
+                  where: {
+                        id,
+                  },
                   data: {
                         name: data.name,
                         fone: data.fone,
                         address: {
                               update: {
                                     city: data.address.city,
+                                    street: data.address.street,
                                     district: data.address.district,
                                     number: data.address.number,
-                                    street: data.address.street,
                               },
                         },
-                        // loan: {
-                        //       update: {
-                        //             where: {
-                        //                   id: data.loan.id,
-                        //             },
-                        //             data: {
-                        //                   value_loan:data.loan
-                        //             },
-                        //       },
-                        // },
+                        loan: {
+                              createMany: {},
+                        },
                   },
-                  where: {
-                        id: data.id,
+                  include: {
+                        address: true,
+                        loan: true,
                   },
             });
       }

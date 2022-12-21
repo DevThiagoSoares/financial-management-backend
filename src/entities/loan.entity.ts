@@ -1,17 +1,16 @@
+import { v4 as uuid } from 'uuid';
 export class Loan {
-      id?: number;
+      id?: string;
       value_loan: number;
-      userId?: number;
+      userId: number;
+      createdAt: Date;
+      updatedAt?: Date | null;
 
       constructor(
-            props: Omit<Loan, 'id'>,
-            id?: number,
-            value_loan?: number,
-            userId?: number,
+            props: Omit<Loan, 'id' | 'userId' | 'createdAt'>,
+            id?: string,
       ) {
             Object.assign(this, props);
-            this.id = id;
-            this.userId = userId;
-            this.value_loan = value_loan;
+            this.id = id = id ?? uuid();
       }
 }

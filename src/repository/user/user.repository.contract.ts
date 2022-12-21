@@ -11,5 +11,5 @@ export default interface IUserRepository {
       ): Promise<PageResponse<User>>;
       findById(id: number): Promise<User>;
       //   findByCpf(cpf: string): Promise<User>;
-      update(data: User): Promise<User>;
+      update(id: number, data: User): Promise<User>;
 }

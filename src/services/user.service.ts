@@ -6,12 +6,15 @@ import { User } from 'src/entities/user.entity';
 import IUserRepository from 'src/repository/user/user.repository.contract';
 import { CreateUserDto } from '../dto/user/create-user.dto';
 import { UpdateUserDto } from '../dto/user/update-user.dto';
+import ILoanRepository from 'src/repository/loan/loan.repository.contract';
 
 @Injectable()
 export class UserService {
+      L;
       constructor(
             @Inject('IUserRepository')
             private readonly userRepository: IUserRepository,
+            private readonly loanRepository: ILoanRepository,
       ) {}
 
       async create(payload: CreateUserDto) {
@@ -52,22 +55,19 @@ export class UserService {
       }
 
       async update(id: number, data: UpdateUserDto) {
-            const user = await this.listById(id);
+            const userById = await this.userRepository.findById(id);
 
-            //     if (data.cpf) {
-            //       const cpfAlredyExist = await this.userRepository.findByCpf(data.cpf);
-
-            //       if (cpfAlredyExist && cpfAlredyExist.cpf !== user.cpf) {
-            //         throw new HttpException(
-            //           `CPF ja cadastrado: ${data.cpf}`,
-            //           HttpStatus.CONFLICT,
-            //         );
-            //       }
-            //     }
-
-            return await this.userRepository.update(
-                  Object.assign(user, { ...user, ...data }),
-            );
+            if (!userById) {
+                  throw new HttpException(
+                        `Não existe id: ${id}`,
+                        HttpStatus.NOT_FOUND,
+                  );
+            }
+            const user = await this.userRepository.update(id, data);
+            for await (const loans of data.loan) {
+                  await this.loanRepository.update(loans);
+            }
+            return user;
       }
 
       async delete(id: number): Promise<User> {
