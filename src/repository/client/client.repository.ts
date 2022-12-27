@@ -1,26 +1,39 @@
 import { Injectable } from '@nestjs/common';
-import { generateQueryByFiltersForUser } from '../../config/database/Queries';
+import { generateQueryByFiltersForClient } from '../../config/database/Queries';
 import { Page, PageResponse } from '../../config/database/page.model';
 import { Pageable } from '../../config/database/pageable.service';
 import { PrismaService } from '../../config/database/prisma.service';
-import { FiltersUserDTO } from '../../dto/user/filterUser.dto';
-import { User } from '../../entities/user.entity';
-import IUserRepository from './user.repository.contract';
+import { FiltersClientDTO } from '../../dto/client/filterClient.dto';
+import { Client } from '../../entities/client.entity';
+import IClientRepository from './client.repository.contract';
 import { Loan } from 'src/entities/loan.entity';
+import { UpdateClientDto } from 'src/dto/client/updateClient.dto';
 
 @Injectable()
-export class UserRepository extends Pageable<User> implements IUserRepository {
+export class ClientRepository
+      extends Pageable<Client>
+      implements IClientRepository
+{
       constructor(private readonly repository: PrismaService) {
             super();
       }
+      findById(id: string): Promise<Client> {
+            return this.repository.client.findUnique({
+                  where: { id },
+                  include: {
+                        address: true,
+                        loan: true,
+                  },
+            });
+      }
       async findAll(
             page: Page,
-            filters?: FiltersUserDTO,
-      ): Promise<PageResponse<User>> {
-            const condition = generateQueryByFiltersForUser(filters);
+            filters?: FiltersClientDTO,
+      ): Promise<PageResponse<Client>> {
+            const condition = generateQueryByFiltersForClient(filters);
 
             const items = condition
-                  ? await this.repository.user.findMany({
+                  ? await this.repository.client.findMany({
                           ...this.buildPage(page),
                           where: condition,
                           include: {
@@ -28,7 +41,7 @@ export class UserRepository extends Pageable<User> implements IUserRepository {
                                 loan: true,
                           },
                     })
-                  : await this.repository.user.findMany({
+                  : await this.repository.client.findMany({
                           ...this.buildPage(page),
                           include: {
                                 address: true,
@@ -37,12 +50,12 @@ export class UserRepository extends Pageable<User> implements IUserRepository {
                     });
 
             const total = condition
-                  ? await this.repository.user.findMany({
+                  ? await this.repository.client.findMany({
                           where: {
                                 ...condition,
                           },
                     })
-                  : await this.repository.user.count();
+                  : await this.repository.client.count();
 
             return this.buildPageResponse(
                   items,
@@ -50,21 +63,15 @@ export class UserRepository extends Pageable<User> implements IUserRepository {
             );
       }
 
-      findById(id: number): Promise<User> {
-            throw new Error('Method not implemented.');
-      }
-      //   findByCpf(cpf: string): Promise<User> {
-      //         throw new Error('Method not implemented.');
-      //   }
-
-      create(data: User): Promise<User> {
-            return this.repository.user.create({
+      create(data: Client): Promise<Client> {
+            return this.repository.client.create({
                   data: {
                         id: data.id,
                         name: data.name,
                         fone: data.fone,
                         address: {
                               create: {
+                                    id: data.address.id,
                                     city: data.address.city,
                                     district: data.address.district,
                                     number: data.address.number,
@@ -74,36 +81,39 @@ export class UserRepository extends Pageable<User> implements IUserRepository {
                         loan: {
                               createMany: {
                                     data: data.loan.map<Loan>((loan) => ({
+                                          id: loan.id,
                                           value_loan: loan.value_loan,
                                     })),
                               },
                         },
                   },
+                  include: {
+                        address: true,
+                        loan: true,
+                  },
             });
       }
-      delete(id: number): Promise<User> {
-            return this.repository.user.delete({
+      delete(id: string): Promise<Client> {
+            return this.repository.client.delete({
                   where: { id },
+                  include: {
+                        address: true,
+                        loan: true,
+                  },
             });
       }
       listAll(
             page: Page,
-            filters?: FiltersUserDTO,
-      ): Promise<PageResponse<User>> {
+            filters?: FiltersClientDTO,
+      ): Promise<PageResponse<Client>> {
             throw new Error('Method not implemented.');
       }
-      listById(id: number): Promise<User> {
-            return this.repository.user.findUnique({
-                  where: { id },
-            });
-      }
-      //   findByCpf(cpf: string): Promise<User> {
-      //         return this.repository.user.findUnique({
-      //               where: { cpf },
-      //         });
-      //   }
-      update(data: User): Promise<User> {
-            return this.repository.user.update({
+
+      update(id: string, data: UpdateClientDto): Promise<Client | null> {
+            return this.repository.client.update({
+                  where: {
+                        id,
+                  },
                   data: {
                         name: data.name,
                         fone: data.fone,
@@ -126,8 +136,9 @@ export class UserRepository extends Pageable<User> implements IUserRepository {
                         //       },
                         // },
                   },
-                  where: {
-                        id: data.id,
+                  include: {
+                        address: true,
+                        loan: true,
                   },
             });
       }

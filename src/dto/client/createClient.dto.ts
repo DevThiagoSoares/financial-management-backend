@@ -1,19 +1,9 @@
-import { Prisma } from '@prisma/client';
 import { Transform, TransformFnParams, Type } from 'class-transformer';
-import {
-      IsString,
-      IsOptional,
-      IsNotEmpty,
-      Length,
-      IsArray,
-} from 'class-validator';
+import { IsString, IsNotEmpty, Length, ValidateNested } from 'class-validator';
 import { Address } from '../../entities/address.entity';
-import { Loan } from '../../entities/loan.entity';
+import { CreateLoanDto } from '../loan/create-loan.dto';
 
-export class CreateUserDto {
-      @IsOptional()
-      id: number;
-
+export class CreateClientDto {
       @IsString()
       @IsNotEmpty()
       @Length(3, 255)
@@ -28,6 +18,7 @@ export class CreateUserDto {
 
       address: Address;
 
-      @IsArray()
-      loan: Loan[];
+      @ValidateNested()
+      @Type(() => CreateLoanDto)
+      loan: CreateLoanDto[];
 }

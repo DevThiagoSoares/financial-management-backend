@@ -1,10 +1,10 @@
 import { convertAndVerifyNumber } from '../../utils/Utils';
-import { IQueryUser } from '../../dto/user/queryUser';
-import { FiltersUserDTO } from 'src/dto/user/filterUser.dto';
+import { IQueryClient } from '../../dto/client/queryClient';
+import { FiltersClientDTO } from 'src/dto/client/filterClient.dto';
 
-export function generateQueryByFiltersForUser(
-      filters: FiltersUserDTO,
-): IQueryUser {
+export function generateQueryByFiltersForClient(
+      filters: FiltersClientDTO,
+): IQueryClient {
       const fields = {
             name: () => ({
                   name: filters.name,

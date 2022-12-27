@@ -34,7 +34,8 @@
     "reflect-metadata": "^0.1.13",
     "regex": "^0.1.1",
     "rimraf": "^3.0.2",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",

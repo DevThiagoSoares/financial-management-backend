@@ -12,20 +12,20 @@ export class AddressController {
       }
 
       @Get(':id')
-      findOne(@Param('id') id: number) {
+      findOne(@Param('id') id: string) {
             return this.addressService.findOne(id);
       }
 
-      @Put(':userId')
+      @Put(':clientId')
       update(
-            @Param('userId') userId: string,
+            @Param('clientId') clientId: string,
             @Body() updateAddressDto: UpdateAddressDto,
       ) {
-            return this.addressService.update(+userId, updateAddressDto);
+            return this.addressService.update(clientId, updateAddressDto);
       }
 
       @Delete(':id')
-      remove(@Param('id') id: number) {
+      remove(@Param('id') id: string) {
             return this.addressService.remove(id);
       }
 }

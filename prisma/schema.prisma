@@ -7,8 +7,8 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id                Int                 @id @default(autoincrement())
+model Client {
+  id                String              @id @unique
   name              String
   fone              String
   address           Address?
@@ -18,22 +18,22 @@ model User {
 }
 
 model Address {
-  id                Int                 @id @default(autoincrement())
+  id                String              @id @unique
   street            String
   district          String
   number            String
   city              String
-  user              User?               @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  userId            Int                 @unique
+  client            Client?             @relation(fields: [clientId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  clientId          String              @unique
   createdAt         DateTime            @db.DateTime2 @default(now())
   updatedAt         DateTime?           @db.DateTimeOffset
 }
 
 model Loan {
-  id                Int                 @id @default(autoincrement())
+  id                String              @id @unique
   value_loan        Int
-  user              User                @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  userId            Int                 
+  client            Client              @relation(fields: [clientId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  clientId          String               
   createdAt         DateTime            @db.DateTime2 @default(now())
   updatedAt         DateTime?           @db.DateTimeOffset
 }

@@ -1,35 +1,47 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../config/database/prisma.service';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { Loan } from 'src/entities/loan.entity';
+import ILoanRepository from 'src/repository/loan/loan.repository.contract';
 import { CreateLoanDto } from '../dto/loan/create-loan.dto';
 import { UpdateLoanDto } from '../dto/loan/update-loan.dto';
+import { ClientService } from './client.service';
 
 @Injectable()
 export class LoanService {
-      constructor(private readonly prisma: PrismaService) {}
+      constructor(
+            @Inject('ILoanRepository')
+            private readonly loanRepository: ILoanRepository,
+            private readonly clientService: ClientService,
+      ) {}
 
-      create(data: CreateLoanDto, userId: number) {
-            console.log(data);
-            return this.prisma.loan.create({
-                  data: {
-                        userId: +userId,
-                        value_loan: data.value_loan,
-                  },
-            });
+      async create(payload: CreateLoanDto, clientId: string) {
+            await this.clientService.listById(clientId);
+
+            const loan = new Loan(payload);
+
+            return this.loanRepository.create(loan, clientId);
       }
 
       findAll() {
             return `This action returns all loan`;
       }
 
-      findOne(id: number) {
-            return `This action returns a #${id} loan`;
+      async findOne(id: string) {
+            const loan = await this.loanRepository.findById(id);
+
+            if (!loan)
+                  throw new HttpException(
+                        `Não foi encontrado um client com o id: ${id}`,
+                        HttpStatus.NOT_FOUND,
+                  );
+            return loan;
       }
 
-      update(id: number, updateLoanDto: UpdateLoanDto) {
+      update(id: string, updateLoanDto: UpdateLoanDto) {
             return `This action updates a #${id} loan`;
       }
 
-      remove(id: number) {
-            return `This action removes a #${id} loan`;
+      async remove(id: string) {
+            await this.findOne(id);
+            return await this.loanRepository.delete(id);
       }
 }

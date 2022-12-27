@@ -10,16 +10,16 @@ export class AddressService {
             return this.prisma.address.findMany();
       }
 
-      findOne(id: number) {
+      findOne(id: string) {
             return this.prisma.address.findUnique({
                   where: { id },
             });
       }
 
-      async update(userId: number, updateAddressDto: UpdateAddressDto) {
+      async update(clientId: string, updateAddressDto: UpdateAddressDto) {
             try {
                   const data = await this.prisma.address.update({
-                        where: { userId },
+                        where: { clientId },
                         data: updateAddressDto,
                   });
 
@@ -29,7 +29,7 @@ export class AddressService {
             }
       }
 
-      remove(id: number) {
+      remove(id: string) {
             return this.prisma.address.delete({
                   where: { id },
             });
