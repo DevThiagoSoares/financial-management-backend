@@ -9,7 +9,10 @@ export class User {
       createdAt: Date;
       updatedAt?: Date | null;
 
-      constructor(props: Omit<User, 'id' | 'createdAt'>, id?: string) {
+      constructor(
+            props: Omit<User, 'id' | 'createdAt' | 'password'>,
+            id?: string,
+      ) {
             Object.assign(this, props);
             this.id = id ?? uuid();
       }

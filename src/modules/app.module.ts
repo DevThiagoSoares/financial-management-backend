@@ -6,9 +6,11 @@ import { AppService } from '../services/app.service';
 import { AddressModule } from './address.module';
 import { LoanModule } from './loan.module';
 import { RepositoryModule } from './repository.module';
-import { ClientController } from 'src/controllers/client.controller';
-import { UserController } from 'src/controllers/user.controller';
 import { UserModule } from './user.module';
+import { AuthModule } from './auth.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from '../config/authentication/guards/jwtAuth.guard';
+import { RolesGuard } from 'src/config/authentication/guards/roles.guard';
 
 @Module({
       imports: [
@@ -18,8 +20,19 @@ import { UserModule } from './user.module';
             LoanModule,
             RepositoryModule,
             UserModule,
+            AuthModule,
       ],
       controllers: [AppController],
-      providers: [AppService],
+      providers: [
+            AppService,
+            {
+                  provide: APP_GUARD,
+                  useClass: JwtAuthGuard,
+            },
+            {
+                  provide: APP_GUARD,
+                  useClass: RolesGuard,
+            },
+      ],
 })
 export class AppModule {}

@@ -19,4 +19,10 @@ export class UserRepository implements IUserRepository {
                   },
             });
       }
+
+      async findByLogin(login: string): Promise<User> {
+            return await this.repository.user.findUnique({
+                  where: { login },
+            });
+      }
 }
