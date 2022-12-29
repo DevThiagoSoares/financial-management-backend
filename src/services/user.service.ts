@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { AuthUserDTO } from 'src/dto/user/authUser.dto';
 import { CreateUserDTO } from 'src/dto/user/createUser.dto';
 import { User } from 'src/entities/user.entity';
 import IUserRepository from 'src/repository/user/user.repository.contract';
@@ -13,6 +12,7 @@ export class UserService {
 
       async create(data: CreateUserDTO): Promise<User> {
             const user = { ...data };
+            console.log(user);
             return await this.userRepository.create(new User(user));
       }
 
