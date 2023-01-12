@@ -14,7 +14,7 @@ import { ConfigModule } from '@nestjs/config';
             UserModule,
             PassportModule,
             JwtModule.register({
-                  secret: process.env.JWT_SECRET,
+                  secret: 'SuperSecretJWTKey',
                   signOptions: { expiresIn: '60d' },
             }),
       ],
