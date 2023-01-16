@@ -7,4 +7,7 @@ export class MappedClientDTO {
       fone?: string;
       address?: Address;
       loan?: Loan[];
+      total?: number;
+      createdAt?: Date;
+      data?: string;
 }

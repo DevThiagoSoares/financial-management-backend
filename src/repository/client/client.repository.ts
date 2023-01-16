@@ -102,12 +102,6 @@ export class ClientRepository
                   },
             });
       }
-      listAll(
-            page: Page,
-            filters?: FiltersClientDTO,
-      ): Promise<PageResponse<Client>> {
-            throw new Error('Method not implemented.');
-      }
 
       update(id: string, data: UpdateClientDto): Promise<Client | null> {
             return this.repository.client.update({

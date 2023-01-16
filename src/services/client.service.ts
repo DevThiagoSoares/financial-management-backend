@@ -8,6 +8,7 @@ import { Client } from 'src/entities/client.entity';
 import IClientRepository from 'src/repository/client/client.repository.contract';
 import { CreateClientDto } from '../dto/client/createClient.dto';
 import { UpdateClientDto } from '../dto/client/updateClient.dto';
+import * as moment from 'moment';
 
 @Injectable()
 export class ClientService {
@@ -27,19 +28,32 @@ export class ClientService {
             page: Page,
             filters?: FiltersClientDTO,
       ): Promise<PageResponse<MappedClientDTO>> {
-            const client = await this.clientRepository.findAll(page, filters);
+            const clients = await this.clientRepository.findAll(page, filters);
 
-            if (client.total === 0) {
+            if (clients.total === 0) {
                   throw new HttpException(
                         'Não existe client para esta pesquisa!',
                         HttpStatus.NOT_FOUND,
                   );
             }
 
-            const items = this.toDTO(client.items);
+            // const data = items[0].createdAt;
+            // console.log('=======>', moment(data).format('DD/MM/YYYY'));
+
+            const items = this.toDTO(clients.items);
+
+            items.map((client) => {
+                  let total;
+
+                  client.loan.forEach((item) => {
+                        total = total + item.value_loan;
+                  });
+
+                  return { total, client };
+            });
 
             return {
-                  total: client.total,
+                  total: clients.total,
                   items,
             };
       }
@@ -73,12 +87,24 @@ export class ClientService {
 
       private toDTO(clients: Client[]): MappedClientDTO[] {
             return clients.map((client) => {
+                  let total = 0;
+                  // const data = moment(client.createdAt).format('DD/MM/YYYY');
+                  // console.log('=======>', data);
+                  client.loan.forEach((item) => {
+                        total = total + item.value_loan;
+                  });
+
                   return {
                         id: client.id,
                         name: client.name,
                         fone: client.fone,
                         address: client.address,
                         loan: client.loan,
+                        total,
+                        data: moment(client.createdAt).format('DD/MM/YYYY'),
+                        dataFinal: moment(client.createdAt)
+                              .add(1, 'month')
+                              .format('DD/MM/YY'),
                   };
             });
       }
