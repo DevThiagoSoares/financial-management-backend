@@ -46,6 +46,7 @@ CREATE TABLE [dbo].[Address] (
 CREATE TABLE [dbo].[Loan] (
     [id] NVARCHAR(1000) NOT NULL,
     [value_loan] INT NOT NULL,
+    [interest_rate] INT NOT NULL,
     [clientId] NVARCHAR(1000) NOT NULL,
     [createdAt] DATETIME2 NOT NULL CONSTRAINT [Loan_createdAt_df] DEFAULT CURRENT_TIMESTAMP,
     [updatedAt] DATETIMEOFFSET,

@@ -6,8 +6,8 @@ import { PrismaService } from '../../config/database/prisma.service';
 import { FiltersClientDTO } from '../../dto/client/filterClient.dto';
 import { Client } from '../../entities/client.entity';
 import IClientRepository from './client.repository.contract';
-import { Loan } from 'src/entities/loan.entity';
-import { UpdateClientDto } from 'src/dto/client/updateClient.dto';
+import { Loan } from '../../entities/loan.entity';
+import { UpdateClientDto } from '../../dto/client/updateClient.dto';
 
 @Injectable()
 export class ClientRepository
@@ -83,6 +83,7 @@ export class ClientRepository
                                     data: data.loan.map<Loan>((loan) => ({
                                           id: loan.id,
                                           value_loan: loan.value_loan,
+                                          interest_rate: loan.interest_rate,
                                     })),
                               },
                         },

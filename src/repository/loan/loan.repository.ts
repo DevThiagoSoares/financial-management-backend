@@ -32,6 +32,7 @@ export class LoanRepository extends Pageable<Loan> implements ILoanRepository {
                   data: {
                         id: data.id,
                         value_loan: data.value_loan,
+                        interest_rate: data.interest_rate,
                         clientId,
                   },
             });

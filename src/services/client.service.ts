@@ -37,9 +37,6 @@ export class ClientService {
                   );
             }
 
-            // const data = items[0].createdAt;
-            // console.log('=======>', moment(data).format('DD/MM/YYYY'));
-
             const items = this.toDTO(clients.items);
 
             items.map((client) => {
@@ -88,10 +85,14 @@ export class ClientService {
       private toDTO(clients: Client[]): MappedClientDTO[] {
             return clients.map((client) => {
                   let total = 0;
-                  // const data = moment(client.createdAt).format('DD/MM/YYYY');
-                  // console.log('=======>', data);
+                  let pagar = 0;
+
                   client.loan.forEach((item) => {
                         total = total + item.value_loan;
+                  });
+
+                  client.loan.forEach((item) => {
+                        pagar = (total * item.interest_rate) / 100 + total;
                   });
 
                   return {
@@ -101,6 +102,7 @@ export class ClientService {
                         address: client.address,
                         loan: client.loan,
                         total,
+                        pagar,
                         data: moment(client.createdAt).format('DD/MM/YYYY'),
                         dataFinal: moment(client.createdAt)
                               .add(1, 'month')

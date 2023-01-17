@@ -42,6 +42,7 @@ model Address {
 model Loan {
   id                String              @id @unique
   value_loan        Int
+  interest_rate     Int
   client            Client              @relation(fields: [clientId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   clientId          String               
   createdAt         DateTime            @db.DateTime2 @default(now())
