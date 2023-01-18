@@ -3,6 +3,7 @@ export class Loan {
       id: string;
       value_loan: number;
       interest_rate: number;
+      rest_loan: number;
       startDate: Date;
       dueDate: Date;
       clientId?: string;

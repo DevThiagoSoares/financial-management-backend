@@ -10,6 +10,7 @@ import { UserModule } from './user.module';
 import { AuthModule } from './auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from '../config/authentication/guards/jwtAuth.guard';
+import { PaymentModule } from './payment.module';
 
 @Module({
       imports: [
@@ -19,6 +20,7 @@ import { JwtAuthGuard } from '../config/authentication/guards/jwtAuth.guard';
             LoanModule,
             RepositoryModule,
             UserModule,
+            PaymentModule,
             AuthModule,
       ],
       controllers: [AppController],

@@ -3,11 +3,11 @@ import { LoanService } from '../services/loan.service';
 import { LoanController } from '../controllers/loan.controller';
 import { PrismaService } from '../config/database/prisma.service';
 import { ClientModule } from './client.module';
-import { AddressService } from 'src/services/address.service';
 import { LoanRepository } from 'src/repository/loan/loan.repository';
+import { PaymentModule } from './payment.module';
 
 @Module({
-      imports: [forwardRef(() => ClientModule)],
+      imports: [forwardRef(() => ClientModule), PaymentModule],
       providers: [
             LoanService,
             {

@@ -23,8 +23,15 @@ export class LoanRepository extends Pageable<Loan> implements ILoanRepository {
                   },
             });
       }
-      update(data: Loan[]): Promise<Loan[]> {
-            throw new Error('Method not implemented.');
+      updateInstalment(id: string, value: number): Promise<any> {
+            return this.repository.loan.update({
+                  where: {
+                        id,
+                  },
+                  data: {
+                        rest_loan: value,
+                  },
+            });
       }
 
       create(data: Loan, clientId: string): Promise<Loan> {
@@ -33,6 +40,7 @@ export class LoanRepository extends Pageable<Loan> implements ILoanRepository {
                         id: data.id,
                         value_loan: data.value_loan,
                         interest_rate: data.interest_rate,
+                        rest_loan: data.value_loan,
                         dueDate: data.dueDate,
                         startDate: data.startDate,
                         clientId,

@@ -22,7 +22,11 @@ export class ClientRepository
                   where: { id },
                   include: {
                         address: true,
-                        loan: true,
+                        loan: {
+                              include: {
+                                    payment: true,
+                              },
+                        },
                   },
             });
       }
@@ -63,7 +67,7 @@ export class ClientRepository
             );
       }
 
-      create(data: Client): Promise<Client> {
+      create(data: Client): Promise<any> {
             return this.repository.client.create({
                   data: {
                         id: data.id,
@@ -84,6 +88,7 @@ export class ClientRepository
                                           id: loan.id,
                                           value_loan: loan.value_loan,
                                           interest_rate: loan.interest_rate,
+                                          rest_loan: loan.value_loan,
                                           dueDate: loan.dueDate,
                                           startDate: loan.startDate,
                                     })),

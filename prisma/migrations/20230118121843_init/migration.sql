@@ -45,13 +45,28 @@ CREATE TABLE [dbo].[Address] (
 -- CreateTable
 CREATE TABLE [dbo].[Loan] (
     [id] NVARCHAR(1000) NOT NULL,
-    [value_loan] INT NOT NULL,
-    [interest_rate] INT NOT NULL,
+    [payment_settled] BIT NOT NULL CONSTRAINT [Loan_payment_settled_df] DEFAULT 0,
+    [value_loan] FLOAT(53) NOT NULL,
+    [interest_rate] FLOAT(53) NOT NULL,
+    [rest_loan] FLOAT(53) NOT NULL,
     [clientId] NVARCHAR(1000) NOT NULL,
+    [startDate] DATETIMEOFFSET NOT NULL,
+    [dueDate] DATETIMEOFFSET NOT NULL,
     [createdAt] DATETIME2 NOT NULL CONSTRAINT [Loan_createdAt_df] DEFAULT CURRENT_TIMESTAMP,
     [updatedAt] DATETIMEOFFSET,
     CONSTRAINT [Loan_pkey] PRIMARY KEY CLUSTERED ([id]),
     CONSTRAINT [Loan_id_key] UNIQUE NONCLUSTERED ([id])
+);
+
+-- CreateTable
+CREATE TABLE [dbo].[Payment] (
+    [id] NVARCHAR(1000) NOT NULL,
+    [value] FLOAT(53) NOT NULL,
+    [loanId] NVARCHAR(1000) NOT NULL,
+    [createdAt] DATETIME2 NOT NULL CONSTRAINT [Payment_createdAt_df] DEFAULT CURRENT_TIMESTAMP,
+    [updatedAt] DATETIMEOFFSET,
+    CONSTRAINT [Payment_pkey] PRIMARY KEY CLUSTERED ([id]),
+    CONSTRAINT [Payment_id_key] UNIQUE NONCLUSTERED ([id])
 );
 
 -- AddForeignKey
@@ -59,6 +74,9 @@ ALTER TABLE [dbo].[Address] ADD CONSTRAINT [Address_clientId_fkey] FOREIGN KEY (
 
 -- AddForeignKey
 ALTER TABLE [dbo].[Loan] ADD CONSTRAINT [Loan_clientId_fkey] FOREIGN KEY ([clientId]) REFERENCES [dbo].[Client]([id]) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE [dbo].[Payment] ADD CONSTRAINT [Payment_loanId_fkey] FOREIGN KEY ([loanId]) REFERENCES [dbo].[Loan]([id]) ON DELETE CASCADE ON UPDATE CASCADE;
 
 COMMIT TRAN;
 

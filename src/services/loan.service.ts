@@ -6,6 +6,8 @@ import { CreateLoanDto } from '../dto/loan/create-loan.dto';
 import { UpdateLoanDto } from '../dto/loan/update-loan.dto';
 import { ClientService } from './client.service';
 import * as moment from 'moment';
+import { PaymentService } from './payment.service';
+import { CreatePaymentDto } from 'src/dto/payment/createPayment.dto';
 
 @Injectable()
 export class LoanService {
@@ -13,6 +15,7 @@ export class LoanService {
             @Inject('ILoanRepository')
             private readonly loanRepository: ILoanRepository,
             private readonly clientService: ClientService,
+            private readonly paymentService: PaymentService,
       ) {}
 
       async create(payload: CreateLoanDto, clientId: string) {
@@ -53,5 +56,21 @@ export class LoanService {
       async remove(id: string) {
             await this.findOne(id);
             return await this.loanRepository.delete(id);
+      }
+
+      async updateInstalment(id: string, payload: CreatePaymentDto) {
+            const loan = await this.findOne(id);
+            if (!loan)
+                  throw new HttpException(
+                        `Não foi encontrado um empréstimo com o id: ${id}`,
+                        HttpStatus.NOT_FOUND,
+                  );
+            const payment = await this.paymentService.create(payload, loan.id);
+            const value = loan.rest_loan - payment.value;
+            const loandUpdated = await this.loanRepository.updateInstalment(
+                  loan.id,
+                  value,
+            );
+            return loandUpdated;
       }
 }

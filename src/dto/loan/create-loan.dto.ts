@@ -6,6 +6,9 @@ export class CreateLoanDto {
       value_loan: number;
 
       @IsNumber()
+      rest_loan: number;
+
+      @IsNumber()
       interest_rate: number;
 
       @IsEnum({ DueDateType })

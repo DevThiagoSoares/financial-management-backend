@@ -38,6 +38,10 @@ export class LoanController {
             return this.loanService.update(id, updateLoanDto);
       }
 
+      @Put('/instalment/:id')
+      updateInstalment(@Param('id') id: string, @Body() payload: any) {
+            return this.loanService.updateInstalment(id, payload);
+      }
       @Delete(':id')
       remove(@Param('id') id: string) {
             return this.loanService.remove(id);
