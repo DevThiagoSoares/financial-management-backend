@@ -29,6 +29,9 @@ export class LoanService {
                         : moment(startDate).add(1, 'month').toDate();
 
             console.log({ startDate, dueDate });
+            payload.rest_loan =
+                  (payload.value_loan * payload.interest_rate) / 100 +
+                  payload.value_loan;
             const loan = new Loan(payload, startDate, dueDate);
 
             return this.loanRepository.create(loan, client.id);
