@@ -15,7 +15,7 @@ import { UpdateLoanDto } from '../dto/loan/update-loan.dto';
 export class LoanController {
       constructor(private readonly loanService: LoanService) {}
 
-      @Post(':clientId')
+      @Post('/:clientId')
       create(
             @Param('clientId') clientId: string,
             @Body() payload: CreateLoanDto,

@@ -9,6 +9,7 @@ import IClientRepository from 'src/repository/client/client.repository.contract'
 import { CreateClientDto } from '../dto/client/createClient.dto';
 import { UpdateClientDto } from '../dto/client/updateClient.dto';
 import * as moment from 'moment';
+import { DueDateType } from 'src/utils/ETypes';
 
 @Injectable()
 export class ClientService {
@@ -19,9 +20,27 @@ export class ClientService {
 
       async create(props: CreateClientDto): Promise<Client> {
             const address = new Address(props.address);
-            const loan = props.loan.map((loans) => new Loan(loans));
-            const client = new Client({ ...props }, address, loan);
-            return await this.clientRepository.create(client);
+
+            if (props.loan.length > 0) {
+                  const loan = props.loan.map((loans) => {
+                        const startDate = new Date();
+                        const dueDate =
+                              loans.dueDate == DueDateType.ONE_WEEK
+                                    ? moment(startDate).add(1, 'week').toDate()
+                                    : moment(startDate)
+                                            .add(1, 'month')
+                                            .toDate();
+                        console.log({ startDate, dueDate });
+
+                        return new Loan({ ...loans }, startDate, dueDate);
+                  });
+
+                  const client = new Client({ ...props }, address, loan);
+                  return await this.clientRepository.create(client);
+            }
+            return await this.clientRepository.create(
+                  new Client({ ...props }, address, []),
+            );
       }
 
       async listAll(

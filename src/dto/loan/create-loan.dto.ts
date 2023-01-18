@@ -1,4 +1,5 @@
-import { IsNumber } from 'class-validator';
+import { IsEAN, IsEnum, IsNumber } from 'class-validator';
+import { DueDateType } from 'src/utils/ETypes';
 
 export class CreateLoanDto {
       @IsNumber()
@@ -6,4 +7,7 @@ export class CreateLoanDto {
 
       @IsNumber()
       interest_rate: number;
+
+      @IsEnum({ DueDateType })
+      dueDate: DueDateType;
 }

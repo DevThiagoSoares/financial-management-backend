@@ -8,43 +8,57 @@ generator client {
 }
 
 model User {
-  id                String              @id @unique
-  name              String
-  login             String              @unique
-  password          String
-  isAdm             Boolean
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime?
+  id        String    @id @unique
+  name      String
+  login     String    @unique
+  password  String
+  isAdm     Boolean
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
 }
 
 model Client {
-  id                String              @id @unique
-  name              String
-  fone              String
-  address           Address?
-  loan              Loan[]             
-  createdAt         DateTime            @db.DateTime2 @default(now())
-  updatedAt         DateTime?           @db.DateTimeOffset
+  id        String    @id @unique
+  name      String
+  fone      String
+  address   Address?
+  loan      Loan[]
+  createdAt DateTime  @default(now()) @db.DateTime2
+  updatedAt DateTime? @db.DateTimeOffset
 }
 
 model Address {
-  id                String              @id @unique
-  street            String
-  district          String
-  number            String
-  city              String
-  client            Client?             @relation(fields: [clientId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  clientId          String              @unique
-  createdAt         DateTime            @db.DateTime2 @default(now())
-  updatedAt         DateTime?           @db.DateTimeOffset
+  id        String    @id @unique
+  street    String
+  district  String
+  number    String
+  city      String
+  client    Client?   @relation(fields: [clientId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  clientId  String    @unique
+  createdAt DateTime  @default(now()) @db.DateTime2
+  updatedAt DateTime? @db.DateTimeOffset
 }
 
 model Loan {
-  id                String              @id @unique
-  value_loan        Int
-  interest_rate     Int
-  client            Client              @relation(fields: [clientId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  clientId          String               
-  createdAt         DateTime            @db.DateTime2 @default(now())
-  updatedAt         DateTime?           @db.DateTimeOffset
+  id              String    @id @unique
+  payment_settled Boolean   @default(false)
+  value_loan      Float
+  interest_rate   Float
+  rest_loan       Float
+  client          Client    @relation(fields: [clientId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  clientId        String
+  startDate       DateTime  @db.DateTimeOffset
+  dueDate         DateTime  @db.DateTimeOffset
+  payment         Payment[]
+  createdAt       DateTime  @default(now()) @db.DateTime2
+  updatedAt       DateTime? @db.DateTimeOffset
+}
+
+model Payment {
+  id        String    @id @unique
+  value     Float
+  loan      Loan      @relation(fields: [loanId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  loanId    String
+  createdAt DateTime  @default(now()) @db.DateTime2
+  updatedAt DateTime? @db.DateTimeOffset
 }

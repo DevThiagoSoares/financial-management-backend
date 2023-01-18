@@ -12,7 +12,7 @@ export class Client {
       updatedAt?: Date | null;
 
       constructor(
-            props: Omit<Client, 'id' | 'createdAt' | 'address' | 'loan'>,
+            props: Omit<Client, 'address' | 'id' | 'createdAt' | 'loan'>,
             address: Address,
             loan: Loan[],
             id?: string,

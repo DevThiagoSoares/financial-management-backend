@@ -84,6 +84,8 @@ export class ClientRepository
                                           id: loan.id,
                                           value_loan: loan.value_loan,
                                           interest_rate: loan.interest_rate,
+                                          dueDate: loan.dueDate,
+                                          startDate: loan.startDate,
                                     })),
                               },
                         },
