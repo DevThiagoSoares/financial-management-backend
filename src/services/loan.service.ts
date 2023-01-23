@@ -32,6 +32,7 @@ export class LoanService {
             payload.rest_loan =
                   (payload.value_loan * payload.interest_rate) / 100 +
                   payload.value_loan;
+            console.log(payload);
             const loan = new Loan(payload, startDate, dueDate);
 
             return this.loanRepository.create(loan, client.id);
@@ -46,19 +47,20 @@ export class LoanService {
 
             if (!loan)
                   throw new HttpException(
-                        `Não foi encontrado um client com o id: ${id}`,
+                        `Não foi encontrado um empréstimo com o id: ${id}`,
                         HttpStatus.NOT_FOUND,
                   );
             return loan;
       }
 
-      update(id: string, updateLoanDto: UpdateLoanDto) {
-            return `This action updates a #${id} loan`;
+      async updateLoanSettle(id: string) {
+            const loan = await this.findOne(id);
+            return await this.loanRepository.update(loan.id);
       }
 
       async remove(id: string) {
-            await this.findOne(id);
-            return await this.loanRepository.delete(id);
+            const loan = await this.findOne(id);
+            return await this.loanRepository.delete(loan.id);
       }
 
       async updateInstalment(id: string, payload: CreatePaymentDto) {
@@ -68,11 +70,28 @@ export class LoanService {
                         `Não foi encontrado um empréstimo com o id: ${id}`,
                         HttpStatus.NOT_FOUND,
                   );
-            const payment = await this.paymentService.create(payload, loan.id);
+            const payment = await this.paymentService.create(
+                  payload.value,
+                  loan.id,
+            );
+
             const value = loan.rest_loan - payment.value;
+            const new_rest_loan = value + (value * loan.interest_rate) / 100;
+
+            const startDate = new Date();
+
+            const new_dueDate =
+                  payload.dueDate == DueDateType.ONE_WEEK
+                        ? moment(startDate).add(1, 'week').toDate()
+                        : moment(startDate).add(1, 'month').toDate();
+
             const loandUpdated = await this.loanRepository.updateInstalment(
                   loan.id,
-                  value,
+                  {
+                        value: value,
+                        rest_loan: new_rest_loan,
+                        dueDate: new_dueDate,
+                  },
             );
             return loandUpdated;
       }

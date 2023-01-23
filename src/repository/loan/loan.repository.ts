@@ -3,11 +3,25 @@ import { Pageable } from '../../config/database/pageable.service';
 import { PrismaService } from '../../config/database/prisma.service';
 import ILoanRepository from './loan.repository.contract';
 import { Loan } from '../../entities/loan.entity';
+import { UpdateLoanDto } from 'src/dto/loan/update-loan.dto';
+import { CreatePaymentDto } from 'src/dto/payment/createPayment.dto';
+import { CreateNewDueDto } from 'src/dto/loan/create-new-due.dto';
 
 @Injectable()
 export class LoanRepository extends Pageable<Loan> implements ILoanRepository {
       constructor(private readonly repository: PrismaService) {
             super();
+      }
+      update(id: string): Promise<Loan> {
+            return this.repository.loan.update({
+                  where: {
+                        id,
+                  },
+                  data: {
+                        payment_settled: true,
+                        rest_loan: 0,
+                  },
+            });
       }
       delete(id: string): Promise<Loan> {
             return this.repository.loan.delete({
@@ -23,13 +37,15 @@ export class LoanRepository extends Pageable<Loan> implements ILoanRepository {
                   },
             });
       }
-      updateInstalment(id: string, value: number): Promise<any> {
+      updateInstalment(id: string, data: CreateNewDueDto): Promise<any> {
             return this.repository.loan.update({
                   where: {
                         id,
                   },
                   data: {
-                        rest_loan: value,
+                        value_loan: data.value,
+                        rest_loan: data.rest_loan,
+                        dueDate: data.dueDate,
                   },
             });
       }

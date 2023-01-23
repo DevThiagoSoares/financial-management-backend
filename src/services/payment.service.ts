@@ -9,9 +9,9 @@ export class PaymentService {
             private readonly repository: IPaymentRepository,
       ) {}
 
-      async create(payload: CreatePaymentDto, loanId: string) {
+      async create(value: number, loanId: string) {
             const loan = await this.repository.create(
-                  new Payment({ ...payload, loanId }, loanId),
+                  new Payment({ value, loanId }, loanId),
                   loanId,
             );
             return loan;
