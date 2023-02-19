@@ -16,7 +16,7 @@ export class LoanService {
             private readonly loanRepository: ILoanRepository,
             private readonly clientService: ClientService,
             private readonly paymentService: PaymentService,
-      ) {}
+      ) { }
 
       async create(payload: CreateLoanDto, clientId: string) {
             const client = await this.clientService.listById(clientId);
@@ -38,8 +38,12 @@ export class LoanService {
             return this.loanRepository.create(loan, client.id);
       }
 
-      findAll() {
-            return `This action returns all loan`;
+      findTrue() {
+            return this.loanRepository.findPaymentTrue();
+      }
+
+      findFalse() {
+            return this.loanRepository.findPaymentFalse();
       }
 
       async findOne(id: string) {

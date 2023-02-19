@@ -13,7 +13,7 @@ import { UpdateLoanDto } from '../dto/loan/update-loan.dto';
 
 @Controller('api/loan')
 export class LoanController {
-      constructor(private readonly loanService: LoanService) {}
+      constructor(private readonly loanService: LoanService) { }
 
       @Post('/:clientId')
       create(
@@ -23,9 +23,14 @@ export class LoanController {
             return this.loanService.create(payload, clientId);
       }
 
-      @Get()
-      findAll() {
-            return this.loanService.findAll();
+      @Get('/false')
+      findFalse() {
+            return this.loanService.findFalse();
+      }
+
+      @Get('/true')
+      findTrue() {
+            return this.loanService.findTrue();
       }
 
       @Get(':id')

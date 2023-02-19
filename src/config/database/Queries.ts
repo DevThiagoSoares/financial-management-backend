@@ -16,7 +16,7 @@ export function generateQueryByFiltersForClient(
                   address: filters.address,
             }),
             loan: () => ({
-                  loan: filters.loan,
+                  loan: filters.loan
             }),
       };
 

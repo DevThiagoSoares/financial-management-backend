@@ -6,6 +6,7 @@ export class Loan {
       rest_loan: number;
       startDate: Date;
       dueDate: Date;
+      payment_settled?: boolean;
       clientId?: string;
       createdAt?: Date;
       updatedAt?: Date | null;

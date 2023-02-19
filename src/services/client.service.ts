@@ -16,7 +16,7 @@ export class ClientService {
       constructor(
             @Inject('IClientRepository')
             private readonly clientRepository: IClientRepository,
-      ) {}
+      ) { }
 
       async create(props: CreateClientDto): Promise<Client> {
             const address = new Address(props.address);
@@ -28,8 +28,8 @@ export class ClientService {
                               loans.dueDate == DueDateType.ONE_WEEK
                                     ? moment(startDate).add(1, 'week').toDate()
                                     : moment(startDate)
-                                            .add(1, 'month')
-                                            .toDate();
+                                          .add(1, 'month')
+                                          .toDate();
                         console.log({ startDate, dueDate });
                         loans.rest_loan =
                               (loans.value_loan * loans.interest_rate) / 100 +
@@ -45,11 +45,11 @@ export class ClientService {
             );
       }
 
-      async listAll(
+      async listAllTrue(
             page: Page,
             filters?: FiltersClientDTO,
       ): Promise<PageResponse<MappedClientDTO>> {
-            const clients = await this.clientRepository.findAll(page, filters);
+            const clients = await this.clientRepository.findAllPaymentTrue(page, filters);
 
             if (clients.total === 0) {
                   throw new HttpException(
@@ -61,12 +61,42 @@ export class ClientService {
             const items = this.toDTO(clients.items);
 
             items.map((client) => {
-                  let total;
+                  let total: number;
 
                   client.loan.forEach((item) => {
                         total = total + item.value_loan;
                   });
+                  return { total, client };
+            });
 
+            return {
+                  total: clients.total,
+                  items,
+            };
+      }
+
+
+      async listAllFalse(
+            page: Page,
+            filters?: FiltersClientDTO,
+      ): Promise<PageResponse<MappedClientDTO>> {
+            const clients = await this.clientRepository.findAllPaymentFalse(page, filters);
+
+            if (clients.total === 0) {
+                  throw new HttpException(
+                        'Não existe client para esta pesquisa!',
+                        HttpStatus.NOT_FOUND,
+                  );
+            }
+
+            const items = this.toDTO(clients.items);
+
+            items.map((client) => {
+                  let total: number;
+
+                  client.loan.forEach((item) => {
+                        total = total + item.value_loan;
+                  });
                   return { total, client };
             });
 

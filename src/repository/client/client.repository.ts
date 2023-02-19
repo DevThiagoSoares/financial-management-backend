@@ -8,12 +8,12 @@ import { Client } from '../../entities/client.entity';
 import IClientRepository from './client.repository.contract';
 import { Loan } from '../../entities/loan.entity';
 import { UpdateClientDto } from '../../dto/client/updateClient.dto';
+import { Client as PrismaClient, Prisma } from '@prisma/client';
 
 @Injectable()
 export class ClientRepository
       extends Pageable<Client>
-      implements IClientRepository
-{
+      implements IClientRepository {
       constructor(private readonly repository: PrismaService) {
             super();
       }
@@ -30,41 +30,175 @@ export class ClientRepository
                   },
             });
       }
-      async findAll(
-            page: Page,
-            filters?: FiltersClientDTO,
-      ): Promise<PageResponse<Client>> {
+      // async findAll(
+      //       page: Page,
+      //       filters?: FiltersClientDTO,
+      // ): Promise<PageResponse<Client>> {
+      //       const condition = generateQueryByFiltersForClient(filters);
+
+      //       const items = condition
+      //             ? await this.repository.client.findMany({
+      //                   ...this.buildPage(page),
+      //                   where: condition,
+      //                   include: {
+      //                         address: true,
+      //                         loan: true,
+      //                   },
+      //             })
+      //             : await this.repository.client.findMany({
+      //                   ...this.buildPage(page),
+      //                   include: {
+      //                         address: true,
+      //                         loan: true,
+      //                   },
+      //             });
+
+      //       const total = condition
+      //             ? await this.repository.client.findMany({
+      //                   where: {
+      //                         ...condition,
+      //                   },
+      //             })
+      //             : await this.repository.client.count();
+
+      //       return this.buildPageResponse(
+      //             items,
+      //             Array.isArray(total) ? total.length : total,
+      //       );
+      // }
+
+
+      // async findAll(
+      //       page: Page,
+      //       filters?: FiltersClientDTO,
+      // ): Promise<PageResponse<Client>> {
+      //       // Gera a cláusula WHERE da consulta com base nos filtros fornecidos
+      //       const whereClause = generateQueryByFiltersForClient(filters);
+
+      //       // Constrói a consulta com base na cláusula WHERE e nas opções de inclusão de dados
+      //       const query = this.buildQuery({
+      //             page,
+      //             where: whereClause,
+      //             include: {
+      //                   address: true,
+      //                   loan: true,
+      //             },
+      //       });
+
+      //       // Executa a consulta para obter os itens e o total de itens
+      //       const [items, total] = await Promise.all([
+      //             this.repository.client.findMany(query),
+      //             this.repository.client.count(whereClause),
+      //       ]);
+
+      //       // Constrói a resposta da página com base nos itens e no total de itens
+      //       return this.buildPageResponse(items, Array.isArray(total) ? total.length : total);
+      // }
+
+      async findAllPaymentTrue(page: Page, filters?: FiltersClientDTO): Promise<PageResponse<Client>> {
             const condition = generateQueryByFiltersForClient(filters);
 
             const items = condition
                   ? await this.repository.client.findMany({
-                          ...this.buildPage(page),
-                          where: condition,
-                          include: {
-                                address: true,
-                                loan: true,
-                          },
-                    })
+                        ...this.buildPage(page),
+
+                        include: {
+                              address: true,
+                              loan: true,
+                        },
+                  })
                   : await this.repository.client.findMany({
-                          ...this.buildPage(page),
-                          include: {
-                                address: true,
-                                loan: true,
-                          },
-                    });
+                        ...this.buildPage(page),
+                        where: {
+                              ...condition,
+                              loan: {
+                                    some: {
+                                          payment_settled: true
+                                    }
+                              }
+                        },
+                        include: {
+                              address: true,
+                              loan: true,
+                        },
+                  });
 
             const total = condition
-                  ? await this.repository.client.findMany({
-                          where: {
-                                ...condition,
-                          },
-                    })
+                  ? await this.repository.client.count({
+
+                  } as Prisma.ClientCountArgs)
                   : await this.repository.client.count();
 
-            return this.buildPageResponse(
-                  items,
-                  Array.isArray(total) ? total.length : total,
-            );
+            const clients: Client[] = items.map((item: PrismaClient) => {
+                  // Faça a conversão de tipo de PrismaClient para Client
+                  const { address, loan, ...rest } = item;
+                  return { ...rest, address: address as any, loan: loan as any } as Client;
+            });
+
+            return this.buildPageResponse(clients, Array.isArray(total) ? total.length : total);
+      }
+
+      async findAllPaymentFalse(page: Page, filters?: FiltersClientDTO): Promise<PageResponse<Client>> {
+            const condition = generateQueryByFiltersForClient(filters);
+
+            const items = condition
+                  ? await this.repository.client.findMany({
+                        ...this.buildPage(page),
+
+                        include: {
+                              address: true,
+                              loan: true,
+                        },
+                  })
+                  : await this.repository.client.findMany({
+                        ...this.buildPage(page),
+                        where: {
+                              ...condition,
+                              loan: {
+                                    some: {
+                                          payment_settled: false
+                                    }
+                              }
+                        },
+                        include: {
+                              address: true,
+                              loan: true,
+                        },
+                  });
+
+            const total = condition
+                  ? await this.repository.client.count({
+
+                  } as Prisma.ClientCountArgs)
+                  : await this.repository.client.count();
+
+            const clients: Client[] = items.map((item: PrismaClient) => {
+                  // Faça a conversão de tipo de PrismaClient para Client
+                  const { address, loan, ...rest } = item;
+                  return { ...rest, address: address as any, loan: loan as any } as Client;
+            });
+
+            return this.buildPageResponse(clients, Array.isArray(total) ? total.length : total);
+      }
+
+
+      private buildQuery(options: {
+            page: Page;
+            where?: any;
+            include?: any;
+      }): Prisma.ClientFindManyArgs {
+            const { page, where, include } = options;
+
+            const query: Prisma.ClientFindManyArgs = {
+                  ...this.buildPage(page),
+                  include: include,
+            };
+
+            if (where) {
+                  query.where = where;
+            }
+
+            return query;
       }
 
       create(data: Client): Promise<any> {

@@ -17,19 +17,27 @@ import { MappedClientDTO } from 'src/dto/client/mappedClient.dto';
 
 @Controller('api/client')
 export class ClientController {
-      constructor(private readonly clientService: ClientService) {}
+      constructor(private readonly clientService: ClientService) { }
 
       @Post()
       create(@Body() createClientDto: CreateClientDto) {
             return this.clientService.create(createClientDto);
       }
 
-      @Get()
-      listAll(
+      @Get('/notPayment')
+      listAllFalse(
             @Query() page: Page,
             @Query() filters: FiltersClientDTO,
       ): Promise<PageResponse<MappedClientDTO>> {
-            return this.clientService.listAll(page, filters);
+            return this.clientService.listAllFalse(page, filters);
+      }
+
+      @Get('/paymentConfirmed')
+      listAllTrue(
+            @Query() page: Page,
+            @Query() filters: FiltersClientDTO,
+      ): Promise<PageResponse<MappedClientDTO>> {
+            return this.clientService.listAllTrue(page, filters);
       }
 
       @Get(':id')
