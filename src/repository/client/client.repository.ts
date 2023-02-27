@@ -129,7 +129,7 @@ export class ClientRepository
                   } as Prisma.ClientCountArgs)
                   : await this.repository.client.count();
 
-            const clients: Client[] = items.map((item: PrismaClient) => {
+            const clients: Client[] = items.map((item: Client) => {
                   // Faça a conversão de tipo de PrismaClient para Client
                   const { address, loan, ...rest } = item;
                   return { ...rest, address: address as any, loan: loan as any } as Client;
@@ -172,7 +172,7 @@ export class ClientRepository
                   } as Prisma.ClientCountArgs)
                   : await this.repository.client.count();
 
-            const clients: Client[] = items.map((item: PrismaClient) => {
+            const clients: Client[] = items.map((item: Client) => {
                   // Faça a conversão de tipo de PrismaClient para Client
                   const { address, loan, ...rest } = item;
                   return { ...rest, address: address as any, loan: loan as any } as Client;

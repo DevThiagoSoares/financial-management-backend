@@ -28,9 +28,9 @@ export class LoanController {
             return this.loanService.findFalse();
       }
 
-      @Get('/true')
-      findTrue() {
-            return this.loanService.findTrue();
+      @Get(':payment_settled/:clientId')
+      findTrue(@Param('payment_settled') payment_settled: string, @Param('clientId') clientId: string) {
+            return this.loanService.findTrue(payment_settled, clientId);
       }
 
       @Get(':id')

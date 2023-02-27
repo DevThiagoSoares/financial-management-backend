@@ -13,13 +13,14 @@ export class LoanRepository extends Pageable<Loan> implements ILoanRepository {
             super();
       }
 
-      findPaymentTrue(): Promise<any> {
+      findPaymentTrue(payment_settled: boolean, clientId: string): Promise<any> {
             return this.repository.loan.findMany({
                   where: {
-                        payment_settled: true
+                        payment_settled: payment_settled,
+                        clientId
                   },
                   include: {
-
+                        client: true,
                         payment: true
                   }
             });

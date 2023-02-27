@@ -6,7 +6,7 @@ export default interface ILoanRepository {
       delete(id: string): Promise<Loan>;
       findById(id: string): Promise<Loan>;
       findPaymentFalse(): Promise<Loan>;
-      findPaymentTrue(): Promise<Loan>;
+      findPaymentTrue(payment_settled: boolean, clientId: string): Promise<Loan>;
       update(id: string): Promise<Loan>;
       updateInstalment(id: string, data: CreateNewDueDto): Promise<Loan>;
 }

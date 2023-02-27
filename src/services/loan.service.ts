@@ -28,18 +28,21 @@ export class LoanService {
                         ? moment(startDate).add(1, 'week').toDate()
                         : moment(startDate).add(1, 'month').toDate();
 
-            console.log({ startDate, dueDate });
             payload.rest_loan =
                   (payload.value_loan * payload.interest_rate) / 100 +
                   payload.value_loan;
-            console.log(payload);
             const loan = new Loan(payload, startDate, dueDate);
 
             return this.loanRepository.create(loan, client.id);
       }
 
-      findTrue() {
-            return this.loanRepository.findPaymentTrue();
+      async findTrue(payment_settled: string, clientId: string) {
+            let booleanPayment_settled = payment_settled == "true" ? true : false
+
+            await this.clientService.listById(clientId)
+
+
+            return this.loanRepository.findPaymentTrue(booleanPayment_settled, clientId);
       }
 
       findFalse() {

@@ -16,12 +16,11 @@ import { UserService } from 'src/services/user.service';
 
 @Controller('api/user')
 export class UserController {
-      constructor(private readonly userService: UserService) {}
+      constructor(private readonly userService: UserService) { }
       @IsPublic()
       @Post()
       @HttpCode(HttpStatus.CREATED)
       create(@Body() payload: CreateUserDTO): Promise<User> {
-            console.log(payload);
             return this.userService.create(payload);
       }
 

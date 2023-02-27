@@ -30,7 +30,6 @@ export class ClientService {
                                     : moment(startDate)
                                           .add(1, 'month')
                                           .toDate();
-                        console.log({ startDate, dueDate });
                         loans.rest_loan =
                               (loans.value_loan * loans.interest_rate) / 100 +
                               loans.value_loan;
