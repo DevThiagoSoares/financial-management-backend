@@ -18,7 +18,7 @@ RUN yarn global add @nestjs/cli
 
 COPY . ./
 
-RUN yarn --prod --silent
+RUN yarn 
 RUN yarn build
 
 EXPOSE ${PORT}
