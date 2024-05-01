@@ -1,5 +1,5 @@
 datasource db {
-  provider = "sqlserver"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -23,8 +23,8 @@ model Client {
   fone      String
   address   Address?
   loan      Loan[]
-  createdAt DateTime  @default(now()) @db.DateTime2
-  updatedAt DateTime? @db.DateTimeOffset
+  createdAt DateTime  @default(now()) 
+  updatedAt DateTime? 
 }
 
 model Address {
@@ -35,8 +35,8 @@ model Address {
   city      String
   client    Client?   @relation(fields: [clientId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   clientId  String    @unique
-  createdAt DateTime  @default(now()) @db.DateTime2
-  updatedAt DateTime? @db.DateTimeOffset
+  createdAt DateTime  @default(now()) 
+  updatedAt DateTime? 
 }
 
 model Loan {
@@ -47,11 +47,11 @@ model Loan {
   rest_loan       Float
   client          Client    @relation(fields: [clientId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   clientId        String
-  startDate       DateTime  @db.DateTimeOffset
-  dueDate         DateTime  @db.DateTimeOffset
+  startDate       DateTime  
+  dueDate         DateTime  
   payment         Payment[]
-  createdAt       DateTime  @default(now()) @db.DateTime2
-  updatedAt       DateTime? @db.DateTimeOffset
+  createdAt       DateTime  @default(now()) 
+  updatedAt       DateTime? 
 }
 
 model Payment {
@@ -59,6 +59,6 @@ model Payment {
   value     Float
   loan      Loan      @relation(fields: [loanId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   loanId    String
-  createdAt DateTime  @default(now()) @db.DateTime2
-  updatedAt DateTime? @db.DateTimeOffset
+  createdAt DateTime  @default(now()) 
+  updatedAt DateTime? 
 }
