@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  financial-api:
+    image: financial-api:latest
+    build:
+      dockerfile: Dockerfile
+      context: .
+      args:
+        NODE_ENV: ${NODE_ENV}
+        PORT: ${PORT}
+    container_name: financial-api
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/etc/timezone:/etc/timezone:ro"
+    restart: always
+    ports:
+      - ${PORT}:${PORT}
+    env_file:
+      - .env
+    depends_on:
+      - postgres-db
+    networks:
+      - api-network
+
+  postgres-db:
+    container_name: postgres-db
+    image: postgres
+    restart: always
+    env_file: .env
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    networks:
+      - api-network
+
+networks:
+  api-network:
+    driver: bridge
