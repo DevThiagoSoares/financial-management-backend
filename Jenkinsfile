@@ -4,7 +4,7 @@ pipeline{
     stage('Build image'){
       steps {
         script {
-          echo "Hello world"
+          sh docker compose up -d financial-api --build
         }
       }
     }

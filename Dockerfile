@@ -23,4 +23,4 @@ RUN yarn build
 
 EXPOSE ${PORT}
 
-CMD ["yarn", "0prod"]
+CMD ["yarn", "prod"]

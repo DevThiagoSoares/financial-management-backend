@@ -18,8 +18,6 @@ services:
       - ${PORT}:${PORT}
     env_file:
       - .env
-    depends_on:
-      - postgres-db
     networks:
       - api-network
 
