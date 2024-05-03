@@ -4,7 +4,7 @@ pipeline{
     stage('Build image'){
       steps {
         script {
-          sh docker compose up -d financial-api --build
+          dockerapp = docker.build("financial/financial-api:${env.BUILD_ID}", '-f ./Dockerfile .')
         }
       }
     }
