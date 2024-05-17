@@ -11,6 +11,7 @@ ENV TZ=America/Manaus
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 COPY package.json yarn.lock ./
+COPY prisma ./prisma/
 
 RUN yarn cache clean --mirror
 
