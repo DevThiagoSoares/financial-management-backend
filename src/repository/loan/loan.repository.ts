@@ -12,32 +12,43 @@ export class LoanRepository extends Pageable<Loan> implements ILoanRepository {
       constructor(private readonly repository: PrismaService) {
             super();
       }
+      updateRestLoan(id: string, rest_loan: number): Promise<Loan> {
+            return this.repository.loan.update({
+                  where: {
+                        id,
+                  },
+                  data: {
+                        rest_loan,
+                  },
+            });
+      }
 
-      findPaymentTrue(payment_settled: boolean, clientId: string): Promise<any> {
+      findPaymentTrue(
+            payment_settled: boolean,
+            clientId: string,
+      ): Promise<any> {
             return this.repository.loan.findMany({
                   where: {
                         payment_settled: payment_settled,
-                        clientId
+                        clientId,
                   },
                   include: {
                         client: true,
-                        payment: true
-                  }
+                        payment: true,
+                  },
             });
       }
 
       findPaymentFalse(): Promise<any> {
             return this.repository.loan.findMany({
                   where: {
-                        payment_settled: false
+                        payment_settled: false,
                   },
                   include: {
-
-                        payment: true
-                  }
+                        payment: true,
+                  },
             });
       }
-
 
       update(id: string): Promise<Loan> {
             return this.repository.loan.update({

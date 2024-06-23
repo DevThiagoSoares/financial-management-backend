@@ -23,8 +23,8 @@ model Client {
   fone      String
   address   Address?
   loan      Loan[]
-  createdAt DateTime  @default(now()) 
-  updatedAt DateTime? 
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
 }
 
 model Address {
@@ -35,8 +35,8 @@ model Address {
   city      String
   client    Client?   @relation(fields: [clientId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   clientId  String    @unique
-  createdAt DateTime  @default(now()) 
-  updatedAt DateTime? 
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
 }
 
 model Loan {
@@ -47,18 +47,21 @@ model Loan {
   rest_loan       Float
   client          Client    @relation(fields: [clientId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   clientId        String
-  startDate       DateTime  
-  dueDate         DateTime  
+  startDate       DateTime
+  dueDate         DateTime
   payment         Payment[]
-  createdAt       DateTime  @default(now()) 
-  updatedAt       DateTime? 
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime?
 }
 
 model Payment {
   id        String    @id @unique
   value     Float
+  valuePaid Float
+  settled   Boolean   @default(false)
   loan      Loan      @relation(fields: [loanId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   loanId    String
-  createdAt DateTime  @default(now()) 
-  updatedAt DateTime? 
+  dueDate   DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
 }

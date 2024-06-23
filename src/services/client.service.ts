@@ -16,7 +16,7 @@ export class ClientService {
       constructor(
             @Inject('IClientRepository')
             private readonly clientRepository: IClientRepository,
-      ) { }
+      ) {}
 
       async create(props: CreateClientDto): Promise<Client> {
             const address = new Address(props.address);
@@ -28,8 +28,8 @@ export class ClientService {
                               loans.dueDate == DueDateType.ONE_WEEK
                                     ? moment(startDate).add(1, 'week').toDate()
                                     : moment(startDate)
-                                          .add(1, 'month')
-                                          .toDate();
+                                            .add(1, 'month')
+                                            .toDate();
                         loans.rest_loan =
                               (loans.value_loan * loans.interest_rate) / 100 +
                               loans.value_loan;
@@ -48,7 +48,10 @@ export class ClientService {
             page: Page,
             filters?: FiltersClientDTO,
       ): Promise<PageResponse<MappedClientDTO>> {
-            const clients = await this.clientRepository.findAllPaymentTrue(page, filters);
+            const clients = await this.clientRepository.findAllPaymentTrue(
+                  page,
+                  filters,
+            );
 
             if (clients.total === 0) {
                   throw new HttpException(
@@ -74,12 +77,14 @@ export class ClientService {
             };
       }
 
-
       async listAllFalse(
             page: Page,
             filters?: FiltersClientDTO,
       ): Promise<PageResponse<MappedClientDTO>> {
-            const clients = await this.clientRepository.findAllPaymentFalse(page, filters);
+            const clients = await this.clientRepository.findAllPaymentFalse(
+                  page,
+                  filters,
+            );
 
             if (clients.total === 0) {
                   throw new HttpException(

@@ -10,10 +10,11 @@ import {
 import { LoanService } from '../services/loan.service';
 import { CreateLoanDto } from '../dto/loan/create-loan.dto';
 import { UpdateLoanDto } from '../dto/loan/update-loan.dto';
+import { UpdatePaymentLoan } from 'src/dto/loan/update-payment.dto';
 
 @Controller('api/loan')
 export class LoanController {
-      constructor(private readonly loanService: LoanService) { }
+      constructor(private readonly loanService: LoanService) {}
 
       @Post('/:clientId')
       create(
@@ -29,7 +30,10 @@ export class LoanController {
       }
 
       @Get(':payment_settled/:clientId')
-      findTrue(@Param('payment_settled') payment_settled: string, @Param('clientId') clientId: string) {
+      findTrue(
+            @Param('payment_settled') payment_settled: string,
+            @Param('clientId') clientId: string,
+      ) {
             return this.loanService.findTrue(payment_settled, clientId);
       }
 
@@ -44,8 +48,14 @@ export class LoanController {
       }
 
       @Put('/instalment/:id')
-      updateInstalment(@Param('id') id: string, @Body() payload: any) {
-            return this.loanService.updateInstalment(id, payload);
+      async updateInstalment(
+            @Param('id') id: string,
+            @Body() payload: UpdatePaymentLoan,
+      ) {
+            await this.loanService.updateInstalment(id, payload);
+            return {
+                  message: 'Instalment updated',
+            };
       }
       @Delete(':id')
       remove(@Param('id') id: string) {

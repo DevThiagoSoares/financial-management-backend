@@ -4,8 +4,11 @@ import { v4 as uuid } from 'uuid';
 export class Payment {
       id: string;
       value: number;
+      valuePaid: number;
+      settled: boolean;
       loan: Loan;
       loanId: string;
+      dueDate: Date;
       createdAt?: Date;
       updatedAt?: Date | null;
 

@@ -8,6 +8,7 @@ import { ClientService } from './client.service';
 import * as moment from 'moment';
 import { PaymentService } from './payment.service';
 import { CreatePaymentDto } from 'src/dto/payment/createPayment.dto';
+import { UpdatePaymentLoan } from 'src/dto/loan/update-payment.dto';
 
 @Injectable()
 export class LoanService {
@@ -16,7 +17,7 @@ export class LoanService {
             private readonly loanRepository: ILoanRepository,
             private readonly clientService: ClientService,
             private readonly paymentService: PaymentService,
-      ) { }
+      ) {}
 
       async create(payload: CreateLoanDto, clientId: string) {
             const client = await this.clientService.listById(clientId);
@@ -33,16 +34,34 @@ export class LoanService {
                   payload.value_loan;
             const loan = new Loan(payload, startDate, dueDate);
 
-            return this.loanRepository.create(loan, client.id);
+            const installments =
+                  payload.dueDate == DueDateType.ONE_WEEK ? 1 : 4;
+            const loanCreated = await this.loanRepository.create(
+                  loan,
+                  client.id,
+            );
+            for (let i = 0; i < installments; i++) {
+                  const value = loan.rest_loan / installments;
+                  const dueDate = moment(startDate)
+                        .add(i + 1, 'week')
+                        .toDate();
+
+                  await this.paymentService.create(value, loan.id, dueDate);
+            }
+
+            return loanCreated;
       }
 
       async findTrue(payment_settled: string, clientId: string) {
-            let booleanPayment_settled = payment_settled == "true" ? true : false
+            let booleanPayment_settled =
+                  payment_settled == 'true' ? true : false;
 
-            await this.clientService.listById(clientId)
+            await this.clientService.listById(clientId);
 
-
-            return this.loanRepository.findPaymentTrue(booleanPayment_settled, clientId);
+            return this.loanRepository.findPaymentTrue(
+                  booleanPayment_settled,
+                  clientId,
+            );
       }
 
       findFalse() {
@@ -70,36 +89,34 @@ export class LoanService {
             return await this.loanRepository.delete(loan.id);
       }
 
-      async updateInstalment(id: string, payload: CreatePaymentDto) {
-            const loan = await this.findOne(id);
-            if (!loan)
+      async updateInstalment(id: string, payload: UpdatePaymentLoan) {
+            const payment = await this.paymentService.findById(id);
+
+            if (!payment)
                   throw new HttpException(
-                        `Não foi encontrado um empréstimo com o id: ${id}`,
+                        `Não foi encontrado um pagamento com o id: ${id}`,
                         HttpStatus.NOT_FOUND,
                   );
-            const payment = await this.paymentService.create(
-                  payload.value,
-                  loan.id,
+            if (payment.settled)
+                  throw new HttpException(
+                        `O pagamento com o id: ${id} já foi liquidado`,
+                        HttpStatus.BAD_REQUEST,
+                  );
+            if (payload.valuePaid > payment.value)
+                  throw new HttpException(
+                        `O valor pago é maior que o valor da parcela`,
+                        HttpStatus.BAD_REQUEST,
+                  );
+
+            await this.paymentService.updateInstalment(payment.id, payload);
+
+            await this.loanRepository.updateRestLoan(
+                  payment.loanId,
+                  payment.loan.rest_loan - payload.valuePaid,
             );
 
-            const value = loan.rest_loan - payment.value;
-            const new_rest_loan = value + (value * loan.interest_rate) / 100;
-
-            const startDate = new Date();
-
-            const new_dueDate =
-                  payload.dueDate == DueDateType.ONE_WEEK
-                        ? moment(startDate).add(1, 'week').toDate()
-                        : moment(startDate).add(1, 'month').toDate();
-
-            const loandUpdated = await this.loanRepository.updateInstalment(
-                  loan.id,
-                  {
-                        value: value,
-                        rest_loan: new_rest_loan,
-                        dueDate: new_dueDate,
-                  },
-            );
-            return loandUpdated;
+            return {
+                  message: 'Instalment updated',
+            };
       }
 }
