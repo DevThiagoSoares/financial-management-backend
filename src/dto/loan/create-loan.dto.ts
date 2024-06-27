@@ -1,4 +1,5 @@
-import { IsEAN, IsEnum, IsNumber } from 'class-validator';
+import { IsDate, IsEAN, IsEnum, IsNumber } from 'class-validator';
+import { EFormatInstalment } from 'src/entities/loan.entity';
 import { DueDateType } from 'src/utils/ETypes';
 
 export class CreateLoanDto {
@@ -6,11 +7,11 @@ export class CreateLoanDto {
       value_loan: number;
 
       @IsNumber()
-      rest_loan: number;
-
-      @IsNumber()
       interest_rate: number;
 
-      @IsEnum({ DueDateType })
-      dueDate: DueDateType;
+      @IsEnum(EFormatInstalment)
+      format_instalment: EFormatInstalment;
+
+      @IsDate()
+      start_date: Date;
 }

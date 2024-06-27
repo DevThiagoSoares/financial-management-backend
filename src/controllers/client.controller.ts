@@ -17,7 +17,7 @@ import { MappedClientDTO } from 'src/dto/client/mappedClient.dto';
 
 @Controller('api/client')
 export class ClientController {
-      constructor(private readonly clientService: ClientService) { }
+      constructor(private readonly clientService: ClientService) {}
 
       @Post()
       create(@Body() createClientDto: CreateClientDto) {
@@ -30,6 +30,14 @@ export class ClientController {
             @Query() filters: FiltersClientDTO,
       ): Promise<PageResponse<MappedClientDTO>> {
             return this.clientService.listAllFalse(page, filters);
+      }
+
+      @Get('')
+      listAll(
+            @Query() page: Page,
+            @Query() filters: FiltersClientDTO,
+      ): Promise<PageResponse<MappedClientDTO>> {
+            return this.clientService.listAll(page, filters);
       }
 
       @Get('/paymentConfirmed')

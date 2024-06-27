@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+      HttpException,
+      HttpStatus,
+      Inject,
+      Injectable,
+      forwardRef,
+} from '@nestjs/common';
 import { Page, PageResponse } from 'src/config/database/page.model';
 import { FiltersClientDTO } from 'src/dto/client/filterClient.dto';
 import { MappedClientDTO } from 'src/dto/client/mappedClient.dto';
@@ -10,38 +16,37 @@ import { CreateClientDto } from '../dto/client/createClient.dto';
 import { UpdateClientDto } from '../dto/client/updateClient.dto';
 import * as moment from 'moment';
 import { DueDateType } from 'src/utils/ETypes';
+import { LoanService } from './loan.service';
 
 @Injectable()
 export class ClientService {
       constructor(
             @Inject('IClientRepository')
             private readonly clientRepository: IClientRepository,
+            @Inject(forwardRef(() => LoanService))
+            private readonly loanService: LoanService,
       ) {}
 
       async create(props: CreateClientDto): Promise<Client> {
             const address = new Address(props.address);
+            const client = new Client({ ...props }, address, []);
+            const result = await this.clientRepository.create(client);
 
             if (props.loan.length > 0) {
-                  const loan = props.loan.map((loans) => {
-                        const startDate = new Date();
-                        const dueDate =
-                              loans.dueDate == DueDateType.ONE_WEEK
-                                    ? moment(startDate).add(1, 'week').toDate()
-                                    : moment(startDate)
-                                            .add(1, 'month')
-                                            .toDate();
-                        loans.rest_loan =
-                              (loans.value_loan * loans.interest_rate) / 100 +
-                              loans.value_loan;
-                        return new Loan({ ...loans }, startDate, dueDate);
+                  props.loan.map(async (loans) => {
+                        await this.loanService.create(
+                              {
+                                    value_loan: loans.value_loan,
+                                    interest_rate: loans.interest_rate,
+                                    format_instalment: loans.format_instalment,
+                                    start_date: loans.start_date,
+                              },
+                              client.id,
+                        );
                   });
-
-                  const client = new Client({ ...props }, address, loan);
-                  return await this.clientRepository.create(client);
             }
-            return await this.clientRepository.create(
-                  new Client({ ...props }, address, []),
-            );
+
+            return result;
       }
 
       async listAllTrue(
@@ -85,6 +90,36 @@ export class ClientService {
                   page,
                   filters,
             );
+
+            if (clients.total === 0) {
+                  throw new HttpException(
+                        'Não existe client para esta pesquisa!',
+                        HttpStatus.NOT_FOUND,
+                  );
+            }
+
+            const items = this.toDTO(clients.items);
+
+            items.map((client) => {
+                  let total: number;
+
+                  client.loan.forEach((item) => {
+                        total = total + item.value_loan;
+                  });
+                  return { total, client };
+            });
+
+            return {
+                  total: clients.total,
+                  items,
+            };
+      }
+
+      async listAll(
+            page: Page,
+            filters?: FiltersClientDTO,
+      ): Promise<PageResponse<MappedClientDTO>> {
+            const clients = await this.clientRepository.findAll(page, filters);
 
             if (clients.total === 0) {
                   throw new HttpException(

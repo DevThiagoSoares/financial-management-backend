@@ -13,9 +13,46 @@ import { Client as PrismaClient, Prisma } from '@prisma/client';
 @Injectable()
 export class ClientRepository
       extends Pageable<Client>
-      implements IClientRepository {
+      implements IClientRepository
+{
       constructor(private readonly repository: PrismaService) {
             super();
+      }
+      async findAll(
+            page: Page,
+            filters?: FiltersClientDTO,
+      ): Promise<PageResponse<Client>> {
+            const condition = generateQueryByFiltersForClient(filters);
+
+            const items = condition
+                  ? await this.repository.client.findMany({
+                          ...this.buildPage(page),
+                          where: condition,
+                          include: {
+                                address: true,
+                                loan: true,
+                          },
+                    })
+                  : await this.repository.client.findMany({
+                          ...this.buildPage(page),
+                          include: {
+                                address: true,
+                                loan: true,
+                          },
+                    });
+
+            const total = condition
+                  ? await this.repository.client.count({
+                          where: {
+                                ...condition,
+                          },
+                    })
+                  : await this.repository.client.count();
+
+            return this.buildPageResponse(
+                  items,
+                  Array.isArray(total) ? total.length : total,
+            );
       }
       findById(id: string): Promise<Client> {
             return this.repository.client.findUnique({
@@ -67,7 +104,6 @@ export class ClientRepository
       //       );
       // }
 
-
       // async findAll(
       //       page: Page,
       //       filters?: FiltersClientDTO,
@@ -95,92 +131,111 @@ export class ClientRepository
       //       return this.buildPageResponse(items, Array.isArray(total) ? total.length : total);
       // }
 
-      async findAllPaymentTrue(page: Page, filters?: FiltersClientDTO): Promise<PageResponse<Client>> {
+      async findAllPaymentTrue(
+            page: Page,
+            filters?: FiltersClientDTO,
+      ): Promise<PageResponse<Client>> {
             const condition = generateQueryByFiltersForClient(filters);
 
             const items = condition
                   ? await this.repository.client.findMany({
-                        ...this.buildPage(page),
+                          ...this.buildPage(page),
 
-                        include: {
-                              address: true,
-                              loan: true,
-                        },
-                  })
+                          include: {
+                                address: true,
+                                loan: true,
+                          },
+                    })
                   : await this.repository.client.findMany({
-                        ...this.buildPage(page),
-                        where: {
-                              ...condition,
-                              loan: {
-                                    some: {
-                                          payment_settled: true
-                                    }
-                              }
-                        },
-                        include: {
-                              address: true,
-                              loan: true,
-                        },
-                  });
+                          ...this.buildPage(page),
+                          where: {
+                                ...condition,
+                                loan: {
+                                      some: {
+                                            payment_settled: true,
+                                      },
+                                },
+                          },
+                          include: {
+                                address: true,
+                                loan: true,
+                          },
+                    });
 
             const total = condition
-                  ? await this.repository.client.count({
-
-                  } as Prisma.ClientCountArgs)
+                  ? await this.repository.client.count(
+                          {} as Prisma.ClientCountArgs,
+                    )
                   : await this.repository.client.count();
 
             const clients: Client[] = items.map((item: Client) => {
                   // Faça a conversão de tipo de PrismaClient para Client
                   const { address, loan, ...rest } = item;
-                  return { ...rest, address: address as any, loan: loan as any } as Client;
+                  return {
+                        ...rest,
+                        address: address as any,
+                        loan: loan as any,
+                  } as Client;
             });
 
-            return this.buildPageResponse(clients, Array.isArray(total) ? total.length : total);
+            return this.buildPageResponse(
+                  clients,
+                  Array.isArray(total) ? total.length : total,
+            );
       }
 
-      async findAllPaymentFalse(page: Page, filters?: FiltersClientDTO): Promise<PageResponse<Client>> {
+      async findAllPaymentFalse(
+            page: Page,
+            filters?: FiltersClientDTO,
+      ): Promise<PageResponse<Client>> {
             const condition = generateQueryByFiltersForClient(filters);
 
             const items = condition
                   ? await this.repository.client.findMany({
-                        ...this.buildPage(page),
+                          ...this.buildPage(page),
 
-                        include: {
-                              address: true,
-                              loan: true,
-                        },
-                  })
+                          include: {
+                                address: true,
+                                loan: true,
+                          },
+                    })
                   : await this.repository.client.findMany({
-                        ...this.buildPage(page),
-                        where: {
-                              ...condition,
-                              loan: {
-                                    some: {
-                                          payment_settled: false
-                                    }
-                              }
-                        },
-                        include: {
-                              address: true,
-                              loan: true,
-                        },
-                  });
+                          ...this.buildPage(page),
+                          where: {
+                                ...condition,
+                                loan: {
+                                      some: {
+                                            payment_settled: false,
+                                      },
+                                },
+                          },
+                          include: {
+                                address: true,
+                                loan: true,
+                          },
+                    });
 
             const total = condition
-                  ? await this.repository.client.count({
-
-                  } as Prisma.ClientCountArgs)
+                  ? await this.repository.client.count(
+                          {} as Prisma.ClientCountArgs,
+                    )
                   : await this.repository.client.count();
 
             const clients: Client[] = items.map((item: Client) => {
                   // Faça a conversão de tipo de PrismaClient para Client
                   const { address, loan, ...rest } = item;
-                  return { ...rest, address: address as any, loan: loan as any } as Client;
+                  return {
+                        ...rest,
+                        address: address as any,
+                        loan: loan as any,
+                  } as Client;
             });
 
-            return this.buildPageResponse(clients, Array.isArray(total) ? total.length : total);
+            return this.buildPageResponse(
+                  clients,
+                  Array.isArray(total) ? total.length : total,
+            );
       }
-
 
       private buildQuery(options: {
             page: Page;
@@ -222,6 +277,8 @@ export class ClientRepository
                                           id: loan.id,
                                           value_loan: loan.value_loan,
                                           interest_rate: loan.interest_rate,
+                                          format_instalment:
+                                                loan.format_instalment,
                                           rest_loan: loan.rest_loan,
                                           dueDate: loan.dueDate,
                                           startDate: loan.startDate,

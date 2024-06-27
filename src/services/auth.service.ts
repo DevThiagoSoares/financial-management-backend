@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/entities/user.entity';
@@ -9,7 +9,7 @@ export class AuthService {
       constructor(
             private userService: UserService,
             private jwtService: JwtService,
-      ) { }
+      ) {}
 
       async validateUser(loginUser: string, pass: string): Promise<User> {
             const user = await this.userService.findOne(loginUser);
@@ -31,5 +31,40 @@ export class AuthService {
                   ...payload,
                   access_token: this.jwtService.sign(payload),
             };
+      }
+
+      private verifyToken(token: string): any {
+            try {
+                  const decodedToken = this.jwtService.verify(token, {
+                        secret: process.env.SECRET_KEY_ACCESS_TOKEN,
+                  });
+
+                  return decodedToken;
+            } catch (e) {
+                  throw new HttpException(
+                        'Token invalid!',
+                        HttpStatus.UNAUTHORIZED,
+                  );
+            }
+      }
+
+      private extractToken(tokenToExtract: string): string {
+            const [, token] = tokenToExtract.split('Bearer ');
+            return token;
+      }
+
+      async decodeJWT(token: string): Promise<any> {
+            console.log(token);
+            const tokenExtracted = this.extractToken(token);
+
+            if (!tokenExtracted)
+                  throw new HttpException(
+                        'Token not provided!',
+                        HttpStatus.UNAUTHORIZED,
+                  );
+
+            const decodedToken = await this.jwtService.decode(tokenExtracted);
+
+            return decodedToken;
       }
 }

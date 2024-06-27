@@ -40,18 +40,19 @@ model Address {
 }
 
 model Loan {
-  id              String    @id @unique
-  payment_settled Boolean   @default(false)
-  value_loan      Float
-  interest_rate   Float
-  rest_loan       Float
-  client          Client    @relation(fields: [clientId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  clientId        String
-  startDate       DateTime
-  dueDate         DateTime
-  payment         Payment[]
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime?
+  id                String    @id @unique
+  payment_settled   Boolean   @default(false)
+  value_loan        Float
+  interest_rate     Float
+  rest_loan         Float
+  format_instalment Int
+  client            Client    @relation(fields: [clientId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  clientId          String
+  startDate         DateTime
+  dueDate           DateTime
+  payment           Payment[]
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime?
 }
 
 model Payment {
