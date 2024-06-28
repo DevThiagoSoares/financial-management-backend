@@ -7,7 +7,7 @@ export function generateQueryByFiltersForClient(
 ): IQueryClient {
       const fields = {
             name: () => ({
-                  name: filters.name,
+                  name: { contains: filters.name, mode: 'insensitive' },
             }),
             fone: () => ({
                   fone: filters.fone,
@@ -16,7 +16,7 @@ export function generateQueryByFiltersForClient(
                   address: filters.address,
             }),
             loan: () => ({
-                  loan: filters.loan
+                  loan: filters.loan,
             }),
       };
 
