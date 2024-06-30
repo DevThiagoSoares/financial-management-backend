@@ -168,7 +168,9 @@ export class ClientService {
                                 payment.iterestDelay.totalMora = result;
                 
                                 // Acumular o total de mora
-                                totalMoraSum += result;
+                                if(payment.iterestDelay.settled === false){
+                                      totalMoraSum += result;
+                                }
                             }
                         });
                 

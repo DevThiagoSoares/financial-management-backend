@@ -6,6 +6,7 @@ import {
       Param,
       Delete,
       Put,
+      Patch,
 } from '@nestjs/common';
 import { IterestDelayService } from '../services/iterestDelay.service';
 import { CreateIterestDelayDto } from '../dto/iterestDelay/create-iterestDelay.dto';
@@ -44,7 +45,7 @@ export class IterestDelayController {
             description:
                   'Utilize este endpoint para atualizar um empréstimo.',
       })
-      @Put(':id')
+      @Patch(':id')
       update(@Param('id') id: string, @Body() data: UpdateIterestDelayDto) {
             return this.iterestDelayService.update(id, data);
       }

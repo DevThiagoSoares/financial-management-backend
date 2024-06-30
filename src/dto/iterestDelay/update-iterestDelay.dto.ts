@@ -1,14 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsEnum, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsDateString, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { DueDateType } from 'src/utils/ETypes';
 
 export class UpdateIterestDelayDto {
       @IsNumber()
       @ApiProperty()
-      value: number;
+      @IsOptional()
+      value?: number;
 
       @IsDateString()
       @ApiProperty()
-      payDay: DueDateType;
+      @IsOptional()
+      payDay?: DueDateType;
 
+      @ApiProperty()
+      @IsBoolean()
+      @IsOptional()
+      settled?: boolean
 }
