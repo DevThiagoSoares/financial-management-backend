@@ -1,13 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNumber } from 'class-validator';
+import { IsDateString, IsEnum, IsNumber, IsString } from 'class-validator';
 import { DueDateType } from 'src/utils/ETypes';
 
-export class CreatePaymentDto {
+export class UpdateIterestDelayDto {
       @IsNumber()
       @ApiProperty()
       value: number;
 
-      @IsEnum({ DueDateType })
+      @IsDateString()
       @ApiProperty()
-      dueDate: DueDateType;
+      payDay: DueDateType;
+
 }

@@ -16,11 +16,18 @@ import { IsPublic } from 'src/decorators/public.decorator';
 import { AuthRequest } from 'src/dto/user/authRequest.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { UserToken } from 'src/dto/auth/userToken.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
       constructor(private authService: AuthService) {}
 
+      @ApiOperation({
+            summary: 'Login',
+            description:
+                'Utilize este endpoint para realizar o login.',
+        })
       @IsPublic()
       @UseGuards(LocalAuthGuard)
       @Post('login')
@@ -31,12 +38,22 @@ export class AuthController {
             return req; */
       }
 
+      @ApiOperation({
+            summary: 'Profile',
+            description:
+                'Utilize este endpoint para obter o perfil do usuário.',
+        })
       @UseGuards(JwtAuthGuard)
       @Get('profile')
       getProfile(@Request() req) {
             return req.user;
       }
 
+      @ApiOperation({
+            summary: 'Logout',
+            description:
+                'Utilize este endpoint para realizar o logout.',
+        })
       @IsPublic()
       @Post('/verify/token')
       async verify(@Body() payload: UserToken) {

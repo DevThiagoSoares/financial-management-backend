@@ -18,7 +18,7 @@ export default interface IClientRepository {
             page: Page,
             filters?: FiltersClientDTO,
       ): Promise<PageResponse<Client>>;
-      findById(id: string): Promise<Client>;
+      findById(id: string): Promise<any>;
       //   findByCpf(cpf: string): Promise<Client>;
       update(id: string, data: UpdateClientDto): Promise<Client>;
 }

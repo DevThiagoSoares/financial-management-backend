@@ -11,6 +11,7 @@ import { AuthModule } from './auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from '../config/authentication/guards/jwtAuth.guard';
 import { PaymentModule } from './payment.module';
+import { IterestDelayModule } from './iterestDelay.module';
 
 @Module({
       imports: [
@@ -22,6 +23,7 @@ import { PaymentModule } from './payment.module';
             UserModule,
             PaymentModule,
             AuthModule,
+            IterestDelayModule,
       ],
       controllers: [AppController],
       providers: [

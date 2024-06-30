@@ -61,7 +61,11 @@ export class ClientRepository
                         address: true,
                         loan: {
                               include: {
-                                    payment: true,
+                                    payment: {
+                                          include: {
+                                                iterestDelay: true
+                                          }
+                                    },
                               },
                         },
                   },

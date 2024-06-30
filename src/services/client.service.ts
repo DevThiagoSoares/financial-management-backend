@@ -9,13 +9,11 @@ import { Page, PageResponse } from 'src/config/database/page.model';
 import { FiltersClientDTO } from 'src/dto/client/filterClient.dto';
 import { MappedClientDTO } from 'src/dto/client/mappedClient.dto';
 import { Address } from 'src/entities/address.entity';
-import { Loan } from 'src/entities/loan.entity';
 import { Client } from 'src/entities/client.entity';
 import IClientRepository from 'src/repository/client/client.repository.contract';
 import { CreateClientDto } from '../dto/client/createClient.dto';
 import { UpdateClientDto } from '../dto/client/updateClient.dto';
 import * as moment from 'moment';
-import { DueDateType } from 'src/utils/ETypes';
 import { LoanService } from './loan.service';
 
 @Injectable()
@@ -25,7 +23,7 @@ export class ClientService {
             private readonly clientRepository: IClientRepository,
             @Inject(forwardRef(() => LoanService))
             private readonly loanService: LoanService,
-      ) {}
+      ) { }
 
       async create(props: CreateClientDto): Promise<Client> {
             const address = new Address(props.address);
@@ -153,6 +151,30 @@ export class ClientService {
                         `Não foi encontrado um client com o id: ${id}`,
                         HttpStatus.NOT_FOUND,
                   );
+
+                  client.loan.forEach(loan => {
+                        let totalMoraSum = 0;
+                
+                        loan.payment.forEach(payment => {
+                            if (payment.iterestDelay && payment.iterestDelay.payDay && payment.dueDate) {
+                                const payDay = new Date(payment.iterestDelay.payDay);
+                                const dueDate = new Date(payment.dueDate);
+                
+                                const timeDiff = Math.abs(payDay.getTime() - dueDate.getTime());
+                                const differenceInDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                
+                                const result = differenceInDays * payment.iterestDelay.value;
+                                payment.iterestDelay.days = differenceInDays;
+                                payment.iterestDelay.totalMora = result;
+                
+                                // Acumular o total de mora
+                                totalMoraSum += result;
+                            }
+                        });
+                
+                        // Adicionar totalMoraSum ao mesmo nível de cada objeto payment
+                        loan.totalMoraSum = totalMoraSum;
+                    });
 
             return client;
       }
